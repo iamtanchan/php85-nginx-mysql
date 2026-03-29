@@ -21,6 +21,10 @@
 - 本番デプロイはリポジトリ直下の `Dockerfile` を使います。
 - カスタムドメインはデプロイ後に DigitalOcean の画面から追加できます。
 - MySQL が必要になったら、DigitalOcean Managed MySQL を App Platform に接続するのがいちばん簡単です。
+- App Platform の `Settings > Environment Variables` に `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SSL_MODE` を追加すると、このアプリはその接続情報を使います。
+- `sslmode=REQUIRED` を使う場合は、DigitalOcean から CA certificate をダウンロードして `DB_SSL_CA` または `DB_SSL_CA_PEM` も設定してください。
+- App Platform ではファイルを直接置きにくいので、CA certificate の中身を `DB_SSL_CA_PEM` に入れる方法がいちばん簡単です。
+- このリポジトリ直下に `ca-certificate.crt` を置くと、自動でその証明書を使います。
 
 ## ローカル開発
 
@@ -61,6 +65,10 @@
 - `Dockerfile` を追加して App Platform からそのままビルドできるようにしました。
 - `.do/deploy.template.yaml` を追加して one-click deploy に対応しました。
 - 本番デプロイのおすすめを Droplet から App Platform に変更しました。
+- `src/index.php` で `DB_*` 環境変数を使って MySQL 接続確認ができるようにしました。
+- `.env` は本物の接続情報用、`.env.example` は共有用テンプレートとして使う前提にしました。
+- `DB_SSL_CA` と `DB_SSL_CA_PEM` に対応し、DigitalOcean Managed MySQL の TLS 接続を確認できるようにしました。
+- リポジトリ直下の `ca-certificate.crt` も自動検出するようにしました。
 - `docker-compose.dev.yml` はローカル専用の bind mount と MySQL 公開ポートを追加します。
 - MySQL は内部ネットワークのみに公開され、phpMyAdmin は `dev` profile のときだけ起動します。
 - ローカル開発用の Compose 構成はそのまま使えます。
