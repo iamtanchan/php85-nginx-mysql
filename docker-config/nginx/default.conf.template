@@ -1,26 +1,22 @@
 
 server {
     listen 80;
-    server_name localhost;
-    root /var/www/public;
+    server_name ${NGINX_SERVER_NAME};
+    root /var/www/src;
     index index.php index.html;
     allow all;
     client_max_body_size 10000M;
 
-    access_log /var/log/nginx/ssl-access.log;
-    error_log  /var/log/nginx/ssl-error.log;
+    access_log /dev/stdout;
+    error_log /dev/stderr warn;
 
-    location / { 
-        root /var/www/public;
+    location / {
         try_files $uri $uri/ /index.php$is_args$args;
     }
 
     location ~ \.php$ {
         try_files $uri =404;
 
-        #502
-        # root /var/www/public;
-        
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass web:9000;
         fastcgi_index index.php;
@@ -28,13 +24,10 @@ server {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
-         # CORS start
+
         add_header Access-Control-Allow-Origin *;
         add_header Access-Control-Allow-Methods "POST, GET, OPTIONS";
         add_header Access-Control-Allow-Headers "Origin, Authorization, Accept";
         add_header Access-Control-Allow-Credentials true;
-        # CORS end
-    }   
+    }
 }
-
-

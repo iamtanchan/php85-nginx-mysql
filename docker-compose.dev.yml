@@ -1,0 +1,12 @@
+services:
+  web:
+    volumes:
+      - .:/var/www
+
+  nginx:
+    volumes:
+      - .:/var/www:ro
+
+  mysql:
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
