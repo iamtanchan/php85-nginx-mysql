@@ -25,6 +25,7 @@
 - `sslmode=REQUIRED` を使う場合は、DigitalOcean から CA certificate をダウンロードして `DB_SSL_CA` または `DB_SSL_CA_PEM` も設定してください。
 - App Platform ではファイルを直接置きにくいので、CA certificate の中身を `DB_SSL_CA_PEM` に入れる方法がいちばん簡単です。
 - このリポジトリ直下に `ca-certificate.crt` を置くと、自動でその証明書を使います。
+- `src` がアプリ本体で、`/` にアクセスすると `login.php` へ移動します。
 
 ## ローカル開発
 
@@ -60,15 +61,19 @@
    phpMyAdmin: http://localhost:8081
    ```
 
+6. アプリ本体は `src` を直接編集します。Docker のローカル開発構成も `src` をそのままマウントします。
+
 ## 変更点
 
 - `Dockerfile` を追加して App Platform からそのままビルドできるようにしました。
 - `.do/deploy.template.yaml` を追加して one-click deploy に対応しました。
 - 本番デプロイのおすすめを Droplet から App Platform に変更しました。
-- `src/index.php` で `DB_*` 環境変数を使って MySQL 接続確認ができるようにしました。
+- `src/index.php` を追加して、`/` アクセス時に `login.php` へ入れるようにしました。
 - `.env` は本物の接続情報用、`.env.example` は共有用テンプレートとして使う前提にしました。
 - `DB_SSL_CA` と `DB_SSL_CA_PEM` に対応し、DigitalOcean Managed MySQL の TLS 接続を確認できるようにしました。
 - リポジトリ直下の `ca-certificate.crt` も自動検出するようにしました。
+- `src/lib/database.php` を更新して、`src` アプリがリポジトリ直下の `.env` と `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` を使えるようにしました。
+- ローカル / Compose の PHP コンテナも `src` をアプリ作業ディレクトリとして使うようにしました。
 - `docker-compose.dev.yml` はローカル専用の bind mount と MySQL 公開ポートを追加します。
 - MySQL は内部ネットワークのみに公開され、phpMyAdmin は `dev` profile のときだけ起動します。
 - ローカル開発用の Compose 構成はそのまま使えます。

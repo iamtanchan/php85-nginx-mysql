@@ -2,7 +2,7 @@ FROM php:8.5-apache-bookworm
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/src
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/src
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -25,8 +25,10 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY docker-config/php/php.ini /usr/local/etc/php/php.ini
-COPY . /var/www/html
+COPY src /var/www/html/src
+COPY ca-certificate.crt /var/www/html/ca-certificate.crt
 
-RUN chown -R www-data:www-data /var/www/html
+RUN mkdir -p /var/www/html/src/uploads /var/www/html/src/data \
+  && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80

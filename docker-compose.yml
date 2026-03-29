@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker-config/php/Dockerfile
+    working_dir: /var/www/src
     restart: unless-stopped
     env_file:
       - .env
@@ -10,6 +11,9 @@ services:
       TZ: ${TZ}
     expose:
       - "9000"
+    volumes:
+      - app-data:/var/www/src/data
+      - app-uploads:/var/www/src/uploads
     depends_on:
       mysql:
         condition: service_healthy
@@ -23,6 +27,8 @@ services:
       NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
     ports:
       - "${APP_PORT:-80}:80"
+    volumes:
+      - app-uploads:/var/www/src/uploads:ro
     depends_on:
       - web
 
@@ -61,4 +67,6 @@ services:
       - "127.0.0.1:${PHPMYADMIN_PORT:-8081}:80"
 
 volumes:
+  app-data:
+  app-uploads:
   mysql-data:

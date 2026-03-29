@@ -1,11 +1,16 @@
 services:
   web:
+    working_dir: /var/www/src
     volumes:
-      - .:/var/www
+      - ./src:/var/www/src
+      - ./src/data:/var/www/src/data
+      - ./src/uploads:/var/www/src/uploads
+      - ./ca-certificate.crt:/var/www/ca-certificate.crt:ro
 
   nginx:
     volumes:
-      - .:/var/www:ro
+      - ./src:/var/www/src:ro
+      - ./src/uploads:/var/www/src/uploads:ro
 
   mysql:
     ports:

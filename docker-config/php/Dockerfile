@@ -1,5 +1,5 @@
 FROM php:8.5-fpm-bookworm
-WORKDIR /var/www
+WORKDIR /var/www/src
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -20,7 +20,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY docker-config/php/php.ini /usr/local/etc/php/php.ini
-COPY . /var/www
+COPY src /var/www/src
+COPY ca-certificate.crt /var/www/ca-certificate.crt
 
-RUN mkdir -p /var/www/storage /var/www/bootstrap/cache \
+RUN mkdir -p /var/www/src/uploads /var/www/src/data \
   && chown -R www-data:www-data /var/www
