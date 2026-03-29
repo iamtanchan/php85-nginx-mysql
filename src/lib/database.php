@@ -99,9 +99,7 @@ function app_required_env(string $name): string
         return $value;
     }
 
-    throw new RuntimeException(
-        sprintf('Environment variable %s is not set. Copy .env.example to .env and update the database settings.', $name)
-    );
+    throw new RuntimeException(sprintf('Environment variable %s is not set. %s', $name, app_database_env_help()));
 }
 
 function app_create_database_connection(): PDO
@@ -109,6 +107,8 @@ function app_create_database_connection(): PDO
     foreach (APP_ENV_FILES as $env_file) {
         app_load_env_file($env_file);
     }
+
+    app_seed_database_settings_from_url();
 
     $dsn = trim((string)app_env('DB_DSN', ''));
     if ($dsn === '') {
@@ -157,11 +157,72 @@ function app_first_env_value(array $names, ?string $default = null): ?string
     }
 
     throw new RuntimeException(
-        sprintf(
-            'Environment variable %s is not set. Copy .env.example to .env and update the database settings.',
-            implode(' or ', $names)
-        )
+        sprintf('Environment variable %s is not set. %s', implode(' or ', $names), app_database_env_help())
     );
+}
+
+function app_database_env_help(): string
+{
+    return 'Set DB_HOST, DB_DATABASE, DB_USERNAME, and DB_PASSWORD, or provide DATABASE_URL. For local development, copy .env.example to .env and update the database settings.';
+}
+
+function app_set_env(string $name, string $value): void
+{
+    putenv($name . '=' . $value);
+    $_ENV[$name] = $value;
+    $_SERVER[$name] = $value;
+}
+
+function app_seed_database_settings_from_url(): void
+{
+    $database_url = trim((string)app_first_optional_env_value(array('DATABASE_URL', 'DB_DATABASE_URL', 'MYSQL_URL')));
+    if ($database_url === '') {
+        return;
+    }
+
+    $parts = parse_url($database_url);
+    if ($parts === false || !isset($parts['scheme']) || stripos((string)$parts['scheme'], 'mysql') !== 0) {
+        return;
+    }
+
+    if (!app_env_exists('DB_HOST') && isset($parts['host'])) {
+        app_set_env('DB_HOST', (string)$parts['host']);
+    }
+    if (!app_env_exists('DB_PORT') && isset($parts['port'])) {
+        app_set_env('DB_PORT', (string)$parts['port']);
+    }
+    if (!app_env_exists('DB_DATABASE') && isset($parts['path'])) {
+        $database = ltrim((string)$parts['path'], '/');
+        if ($database !== '') {
+            app_set_env('DB_DATABASE', $database);
+        }
+    }
+    if (!app_env_exists('DB_USERNAME') && isset($parts['user'])) {
+        app_set_env('DB_USERNAME', rawurldecode((string)$parts['user']));
+    }
+    if (!app_env_exists('DB_PASSWORD') && isset($parts['pass'])) {
+        app_set_env('DB_PASSWORD', rawurldecode((string)$parts['pass']));
+    }
+
+    if (isset($parts['query']) && !app_env_exists('DB_SSL_MODE')) {
+        parse_str((string)$parts['query'], $query);
+        $ssl_mode = $query['sslmode'] ?? $query['ssl-mode'] ?? null;
+        if (is_string($ssl_mode) && trim($ssl_mode) !== '') {
+            app_set_env('DB_SSL_MODE', strtoupper(trim($ssl_mode)));
+        }
+    }
+}
+
+function app_first_optional_env_value(array $names, ?string $default = null): ?string
+{
+    foreach ($names as $name) {
+        $value = app_env($name);
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+    }
+
+    return $default;
 }
 
 function app_pdo_mysql_attribute(string $modern, string $legacy): ?int

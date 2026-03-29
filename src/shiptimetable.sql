@@ -10,12 +10,29 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+SET FOREIGN_KEY_CHECKS = 0;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+
+DROP TABLE IF EXISTS `schedule`;
+DROP TABLE IF EXISTS `timetable`;
+DROP TABLE IF EXISTS `content_display`;
+DROP TABLE IF EXISTS `content_item`;
+DROP TABLE IF EXISTS `content_display_setting`;
+DROP TABLE IF EXISTS `message`;
+DROP TABLE IF EXISTS `message_display_setting`;
+DROP TABLE IF EXISTS `display_language_setting`;
+DROP TABLE IF EXISTS `display`;
+DROP TABLE IF EXISTS `login`;
+DROP TABLE IF EXISTS `badge`;
+DROP TABLE IF EXISTS `destination`;
+DROP TABLE IF EXISTS `ship`;
+DROP TABLE IF EXISTS `season`;
+DROP TABLE IF EXISTS `station`;
 
 --
 -- データベース: `shiptimetable`
@@ -32,7 +49,8 @@ CREATE TABLE `badge` (
   `label` varchar(100) DEFAULT NULL,
   `label_e` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`badge_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -60,7 +78,8 @@ CREATE TABLE `content_display` (
   `content_id` int UNSIGNED NOT NULL,
   `sort_order` int NOT NULL DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`content_display_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -81,7 +100,8 @@ CREATE TABLE `content_display_setting` (
   `swap_interval_seconds` int NOT NULL DEFAULT '8',
   `rotation_seconds` int NOT NULL DEFAULT '8',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -110,7 +130,8 @@ CREATE TABLE `content_item` (
   `sort_order` int NOT NULL DEFAULT '100',
   `note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`content_item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -138,7 +159,8 @@ CREATE TABLE `destination` (
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `name_e` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`destination_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -158,11 +180,12 @@ INSERT INTO `destination` (`destination_id`, `name`, `name_e`, `created_at`, `up
 --
 
 CREATE TABLE `display` (
-  `display_id` int DEFAULT NULL,
+  `display_id` int NOT NULL,
   `reset` datetime NOT NULL,
   `ch` int NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`display_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -172,8 +195,8 @@ CREATE TABLE `display` (
 INSERT INTO `display` (`display_id`, `reset`, `ch`, `created_at`, `updated_at`) VALUES
 (1, '2019-11-01 08:30:10', 70, '2026-03-02 07:20:39', '2026-03-18 09:22:38'),
 (2, '2019-11-01 09:00:11', 49, '2026-03-02 07:20:39', '2026-03-16 16:11:06'),
-(3, '0000-00-00 00:00:00', 66, '2026-03-02 07:20:39', '2026-03-09 03:19:07'),
-(4, '0000-00-00 00:00:00', 94, '2026-03-02 07:20:39', '2026-03-02 07:20:39');
+(3, '1970-01-01 00:00:00', 66, '2026-03-02 07:20:39', '2026-03-09 03:19:07'),
+(4, '1970-01-01 00:00:00', 94, '2026-03-02 07:20:39', '2026-03-02 07:20:39');
 
 -- --------------------------------------------------------
 
@@ -201,7 +224,8 @@ CREATE TABLE `login` (
   `auth` int DEFAULT NULL,
   `station_id` int DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`login_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -225,7 +249,8 @@ CREATE TABLE `message` (
   `is_visible` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `message_id` int UNSIGNED NOT NULL
+  `message_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`message_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -247,7 +272,8 @@ CREATE TABLE `message_display_setting` (
   `station_id` int NOT NULL,
   `drag_speed` int NOT NULL DEFAULT '4',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -275,7 +301,8 @@ CREATE TABLE `schedule` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`schedule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -309,7 +336,8 @@ CREATE TABLE `season` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`season_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -334,7 +362,8 @@ CREATE TABLE `ship` (
   `name` varchar(20) NOT NULL,
   `name_e` varchar(30) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ship_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -358,7 +387,8 @@ CREATE TABLE `station` (
   `name` varchar(20) NOT NULL,
   `name_e` varchar(30) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
@@ -386,7 +416,8 @@ CREATE TABLE `timetable` (
   `ontime` tinyint UNSIGNED NOT NULL DEFAULT '15',
   `offtime` tinyint UNSIGNED NOT NULL DEFAULT '10',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`timetable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -407,94 +438,26 @@ INSERT INTO `timetable` (`timetable_id`, `station_id`, `departure_time`, `ship_i
 -- ダンプしたテーブルのインデックス
 --
 
---
--- テーブルのインデックス `badge`
---
-ALTER TABLE `badge`
-  ADD PRIMARY KEY (`badge_id`);
-
---
--- テーブルのインデックス `content_display`
---
 ALTER TABLE `content_display`
-  ADD PRIMARY KEY (`content_display_id`),
   ADD UNIQUE KEY `uq_content_display_station_sort` (`station_id`,`sort_order`),
   ADD UNIQUE KEY `uq_content_display_station_content` (`station_id`,`content_id`),
   ADD KEY `idx_content_display_station` (`station_id`,`sort_order`);
 
---
--- テーブルのインデックス `content_display_setting`
---
-ALTER TABLE `content_display_setting`
-  ADD PRIMARY KEY (`station_id`);
-
---
--- テーブルのインデックス `content_item`
---
 ALTER TABLE `content_item`
-  ADD PRIMARY KEY (`content_item_id`),
   ADD KEY `idx_content_station` (`station_id`,`is_active`,`sort_order`);
 
---
--- テーブルのインデックス `destination`
---
-ALTER TABLE `destination`
-  ADD PRIMARY KEY (`destination_id`);
-
---
--- テーブルのインデックス `login`
---
-ALTER TABLE `login`
-  ADD PRIMARY KEY (`login_id`);
-
---
--- テーブルのインデックス `message`
---
 ALTER TABLE `message`
-  ADD PRIMARY KEY (`message_id`),
   ADD KEY `idx_message_station` (`station_id`,`message_id`),
   ADD KEY `idx_message_station_order` (`station_id`,`sort_order`,`message_id`);
 
---
--- テーブルのインデックス `message_display_setting`
---
-ALTER TABLE `message_display_setting`
-  ADD PRIMARY KEY (`station_id`);
-
---
--- テーブルのインデックス `schedule`
---
 ALTER TABLE `schedule`
-  ADD PRIMARY KEY (`schedule_id`),
   ADD KEY `idx_dial_period_station` (`station_id`,`is_active`),
   ADD KEY `idx_schedule_station` (`station_id`,`is_active`,`season_id`),
   ADD KEY `fk_schedule_season` (`season_id`),
   ADD KEY `fk_schedule_ship` (`ship_id`),
   ADD KEY `fk_schedule_destination` (`destination_id`);
 
---
--- テーブルのインデックス `season`
---
-ALTER TABLE `season`
-  ADD PRIMARY KEY (`season_id`);
-
---
--- テーブルのインデックス `ship`
---
-ALTER TABLE `ship`
-  ADD PRIMARY KEY (`ship_id`);
-
---
--- テーブルのインデックス `station`
---
-ALTER TABLE `station`
-  ADD PRIMARY KEY (`station_id`);
-
---
--- テーブルのインデックス `timetable`
---
 ALTER TABLE `timetable`
-  ADD PRIMARY KEY (`timetable_id`),
   ADD KEY `idx_timetable_station_dial_time` (`station_id`,`departure_time`),
   ADD KEY `idx_timetable_station_time` (`station_id`,`departure_time`),
   ADD KEY `fk_timetable_ship` (`ship_id`),
@@ -565,6 +528,7 @@ ALTER TABLE `schedule`
 ALTER TABLE `timetable`
   ADD CONSTRAINT `fk_timetable_destination` FOREIGN KEY (`destination_id`) REFERENCES `destination` (`destination_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_timetable_ship` FOREIGN KEY (`ship_id`) REFERENCES `ship` (`ship_id`) ON DELETE CASCADE;
+SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

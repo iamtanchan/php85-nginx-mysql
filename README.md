@@ -26,6 +26,7 @@
 - App Platform ではファイルを直接置きにくいので、CA certificate の中身を `DB_SSL_CA_PEM` に入れる方法がいちばん簡単です。
 - このリポジトリ直下に `ca-certificate.crt` を置くと、自動でその証明書を使います。
 - `src` がアプリ本体で、`/` にアクセスすると `login.php` へ移動します。
+- すでに App Platform で `DB_HOST is not set` が出ている場合は、`Settings > Environment Variables` で上記の `DB_*` を追加して再デプロイしてください。
 
 ## ローカル開発
 
@@ -67,6 +68,7 @@
 
 - `Dockerfile` を追加して App Platform からそのままビルドできるようにしました。
 - `.do/deploy.template.yaml` を追加して one-click deploy に対応しました。
+- `.do/deploy.template.yaml` に App Platform の DB 環境変数プレースホルダを追加しました。
 - 本番デプロイのおすすめを Droplet から App Platform に変更しました。
 - `src/index.php` を追加して、`/` アクセス時に `login.php` へ入れるようにしました。
 - `.env` は本物の接続情報用、`.env.example` は共有用テンプレートとして使う前提にしました。
