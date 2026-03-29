@@ -1,8 +1,26 @@
 # PHP 8.5 + Nginx + MySQL
 
-このリポジトリは、ローカル開発と DigitalOcean Droplet へのデプロイの両方に対応した Docker Compose 構成です。
+このリポジトリは、ローカル開発は Docker Compose、DigitalOcean への本番デプロイは App Platform でシンプルに行える構成です。
 
 アプリの公開ディレクトリは `src` です。
+
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/iamtanchan/php85-nginx-mysql/tree/main)
+
+## いちばん簡単なデプロイ方法
+
+1. 上の `Deploy to DO` ボタンをクリックします。
+2. DigitalOcean にログインして `Create App` を進めます。
+3. App Platform がこのリポジトリの `Dockerfile` を使って自動ビルドします。
+4. `main` ブランチへの push で自動再デプロイされます。
+
+この方法なら Droplet の作成、Docker のインストール、SSH 設定は不要です。
+
+## DigitalOcean App Platform
+
+- App Platform 用の設定は `.do/deploy.template.yaml` に入っています。
+- 本番デプロイはリポジトリ直下の `Dockerfile` を使います。
+- カスタムドメインはデプロイ後に DigitalOcean の画面から追加できます。
+- MySQL が必要になったら、DigitalOcean Managed MySQL を App Platform に接続するのがいちばん簡単です。
 
 ## ローカル開発
 
@@ -38,43 +56,11 @@
    phpMyAdmin: http://localhost:8081
    ```
 
-## DigitalOcean Droplet へデプロイ
-
-1. Ubuntu Droplet を作成して Docker / Compose Plugin を入れます。
-
-   ```bash
-   sudo apt-get update
-   sudo apt-get install -y docker.io docker-compose-plugin
-   sudo systemctl enable --now docker
-   ```
-
-2. サーバーへコードを配置して `.env` を本番向けに更新します。
-
-   ```dotenv
-   APP_PORT=80
-   NGINX_SERVER_NAME=example.com
-   MYSQL_ROOT_PASSWORD=strong-root-password
-   MYSQL_USER=app
-   MYSQL_PASSWORD=strong-app-password
-   ```
-
-3. 本番用のデフォルト構成で起動します。
-
-   ```bash
-   docker compose up -d --build
-   ```
-
-4. 必要ならファイアウォールで `80/tcp` だけ公開します。
-
-   ```bash
-   sudo ufw allow 80/tcp
-   sudo ufw allow OpenSSH
-   sudo ufw enable
-   ```
-
 ## 変更点
 
-- `docker-compose.yml` は本番向けの安全なデフォルトです。
+- `Dockerfile` を追加して App Platform からそのままビルドできるようにしました。
+- `.do/deploy.template.yaml` を追加して one-click deploy に対応しました。
+- 本番デプロイのおすすめを Droplet から App Platform に変更しました。
 - `docker-compose.dev.yml` はローカル専用の bind mount と MySQL 公開ポートを追加します。
 - MySQL は内部ネットワークのみに公開され、phpMyAdmin は `dev` profile のときだけ起動します。
-- Nginx / PHP は bind mount 前提ではなく、イメージにアプリを含めてデプロイできます。
+- ローカル開発用の Compose 構成はそのまま使えます。

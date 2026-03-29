@@ -1,0 +1,10 @@
+spec:
+  name: php85-nginx-mysql
+  region: sgp
+  services:
+    - name: web
+      git:
+        repo_clone_url: https://github.com/iamtanchan/php85-nginx-mysql.git
+        branch: main
+      dockerfile_path: Dockerfile
+      http_port: 80
