@@ -16,6 +16,13 @@ $requested_station_id = isset($_REQUEST['s']) ? (int)$_REQUEST['s'] : 0;
 $station_id = resolve_station_id($stations, $requested_station_id);
 $station_name = get_station_name($stations, $station_id);
 $definitions = guidance_definitions();
+
+function guidance_self_path(): string
+{
+    $self = trim((string)($_SERVER['PHP_SELF'] ?? 'guidance.php'));
+    return $self !== '' ? $self : 'guidance.php';
+}
+
 $status_type = '';
 $status_message = '';
 
@@ -76,6 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$guidance_page_base = guidance_self_path();
+$guidance_page_action = $guidance_page_base . '?s=' . $station_id;
 $state = guidance_load_state();
 $payload = guidance_export_payload($state);
 ?>
@@ -102,7 +111,7 @@ $payload = guidance_export_payload($state);
             <?php } ?>
 
             <section class="adm-panel mb-4 <?php print(app_panel_classes()); ?>">
-                <form class="adm-toolbar flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" method="get" action="guidance.php">
+                <form class="adm-toolbar flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" method="get" action="<?php print(h($guidance_page_base)); ?>">
                     <div class="<?php print(app_field_classes('max-w-xl')); ?>">
                         <label class="<?php print(app_label_classes()); ?>" for="guidanceStation">停留所確認</label>
                         <select id="guidanceStation" class="<?php print(app_select_classes()); ?>" name="s">
@@ -122,7 +131,7 @@ $payload = guidance_export_payload($state);
                     <div><strong class="text-slate-950">現在の状態:</strong> <?php if (!empty($payload['ready'])) { ?>自動再生可能<?php } else { ?>未設定<?php } ?></div>
                 </div>
 
-                <form class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end" method="post" action="guidance.php">
+                <form class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end" method="post" action="<?php print(h($guidance_page_action)); ?>" data-ajax-skip="1">
                     <input type="hidden" name="s" value="<?php print($station_id); ?>">
                     <input type="hidden" name="action" value="settings">
                     <div class="<?php print(app_field_classes('max-w-xs')); ?>">
@@ -170,7 +179,7 @@ $payload = guidance_export_payload($state);
                                 <?php } ?>
                             </div>
 
-                            <form class="mt-5 space-y-4" method="post" action="guidance.php" enctype="multipart/form-data">
+                            <form class="mt-5 space-y-4" method="post" action="<?php print(h($guidance_page_action)); ?>" enctype="multipart/form-data" data-ajax-skip="1">
                                 <input type="hidden" name="s" value="<?php print($station_id); ?>">
                                 <input type="hidden" name="action" value="upload">
                                 <input type="hidden" name="guidance_key" value="<?php print(h($key)); ?>">

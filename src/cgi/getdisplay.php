@@ -33,6 +33,7 @@ function getBadgeMap(PDO $db)
 
 try {
     $now = date('H:i:s');
+    $hide_before = date('H:i:s', time() + 60);
     $day_bounds = current_day_bounds();
     $rows = array();
     $sql = 'SELECT timetable_id, departure_time, ship_id, destination_id, badge_id, ontime, offtime
@@ -40,14 +41,14 @@ try {
             WHERE station_id = :id
               AND created_at >= :day_start
               AND created_at < :day_end
-              AND departure_time >= :ntime
+                            AND departure_time > :hide_before
             ORDER BY departure_time ASC
             LIMIT 10';
     $stt = $db->prepare($sql);
     $stt->bindValue(':id', $id, PDO::PARAM_INT);
     $stt->bindValue(':day_start', $day_bounds['start']);
     $stt->bindValue(':day_end', $day_bounds['end']);
-    $stt->bindValue(':ntime', $now);
+    $stt->bindValue(':hide_before', $hide_before);
     $stt->execute();
     $rows = $stt->fetchAll(PDO::FETCH_ASSOC);
 

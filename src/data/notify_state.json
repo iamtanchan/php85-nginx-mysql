@@ -1,7 +1,6 @@
 {
     "selected_by_station": {
-        "2": "schedule_review",
-        "1": "service_stop"
+        "2": "schedule_review"
     },
     "items": {
         "service_stop": {
@@ -21,10 +20,10 @@
         "closed": {
             "key": "closed",
             "label": "営業終了",
-            "title": "営業終了",
-            "image_path": "uploads/notify/notify_closed_20260317_005651_2d3c910fdf8141d3.png",
-            "updated_at": "2026-03-17T00:56:51+09:00"
+            "title": "営業終了 333",
+            "image_path": "uploads/notify/notify_closed_20260330_172407_d6282f3141e678e4.png",
+            "updated_at": "2026-03-30T17:24:07+09:00"
         }
     },
-    "updated_at": "2026-03-23T11:52:44+09:00"
+    "updated_at": "2026-03-30T17:24:07+09:00"
 }

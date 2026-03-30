@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 const NOTIFY_STATE_FILE = __DIR__ . '/../data/notify_state.json';
@@ -278,21 +279,24 @@ function notify_get_last_departure_for_station(PDO $db, int $station_id): string
         return '';
     }
 
-    $day_bounds = current_day_bounds();
-    $stt = $db->prepare(
-        'SELECT MAX(departure_time) AS departure_time
-         FROM timetable
-         WHERE station_id = :station_id
-           AND created_at >= :day_start
-           AND created_at < :day_end'
-    );
-    $stt->bindValue(':station_id', $station_id, PDO::PARAM_INT);
-    $stt->bindValue(':day_start', $day_bounds['start']);
-    $stt->bindValue(':day_end', $day_bounds['end']);
-    $stt->execute();
+    try {
+        $day_bounds = current_day_bounds();
+        $stt = $db->prepare(
+            'SELECT MAX(departure_time) AS departure_time
+             FROM timetable
+             WHERE station_id = :station_id
+               AND created_at >= :day_start
+               AND created_at < :day_end'
+        );
+        $stt->bindValue(':station_id', $station_id, PDO::PARAM_INT);
+        $stt->bindValue(':day_start', $day_bounds['start']);
+        $stt->bindValue(':day_end', $day_bounds['end']);
+        $stt->execute();
 
-    $departure_time = trim((string)$stt->fetchColumn());
-    return $departure_time;
+        return trim((string)$stt->fetchColumn());
+    } catch (Throwable $e) {
+        return '';
+    }
 }
 
 function notify_resolve_active_notice(PDO $db, int $station_id): array

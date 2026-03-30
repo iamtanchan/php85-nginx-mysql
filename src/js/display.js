@@ -55,7 +55,6 @@ $(document).ready(function () {
     var contentSlidesEl = document.getElementById("contentStageSlides");
     var contentEmptyEl = document.getElementById("contentStageEmpty");
     var contentIndicatorEl = document.getElementById("contentStageIndicator");
-    var contentTitleEl = document.getElementById("contentStageTitle");
     var notifyPanelEl = document.getElementById("notifyPanel");
     var notifyImageEl = document.getElementById("notifyImage");
     var notifyLabelEl = document.getElementById("notifyLabel");
@@ -417,18 +416,18 @@ $(document).ready(function () {
         }
 
         switch (String(d.status || "")) {
-        case "0":
-            return "";
-        case "1":
-            return "<p class='rounded-full border border-blue-500 bg-blue-500 px-4 py-2 text-center text-base font-bold text-white shadow-lg shadow-blue-500/30'>" + labelByLanguage("乗船案内中", "Boarding") + "</p>";
-        case "2":
-            return "<p class='rounded-full border border-rose-300 bg-rose-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-rose-300/35'>" + labelByLanguage("完売", "Sold Out") + "</p>";
-        case "3":
-            return "<p class='rounded-full border border-amber-300 bg-amber-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-amber-300/40'>" + labelByLanguage("遅延", "Delayed") + "</p>";
-        case "4":
-            return "<p class='rounded-full border border-fuchsia-300 bg-fuchsia-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-fuchsia-300/35'>" + labelByLanguage("乗船遅延中", "Boarding Delayed") + "</p>";
-        default:
-            return "";
+            case "0":
+                return "";
+            case "1":
+                return "<p class='rounded-full border border-blue-500 bg-blue-500 px-4 py-2 text-center text-base font-bold text-white shadow-lg shadow-blue-500/30'>" + labelByLanguage("乗船案内中", "Boarding") + "</p>";
+            case "2":
+                return "<p class='rounded-full border border-rose-300 bg-rose-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-rose-300/35'>" + labelByLanguage("完売", "Sold Out") + "</p>";
+            case "3":
+                return "<p class='rounded-full border border-amber-300 bg-amber-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-amber-300/40'>" + labelByLanguage("遅延", "Delayed") + "</p>";
+            case "4":
+                return "<p class='rounded-full border border-fuchsia-300 bg-fuchsia-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-fuchsia-300/35'>" + labelByLanguage("乗船遅延中", "Boarding Delayed") + "</p>";
+            default:
+                return "";
         }
     }
 
@@ -761,7 +760,7 @@ $(document).ready(function () {
     }
 
     function playGuidanceItem(index) {
-        if (!guidanceVideoEl || !guidanceLabelEl || !guidanceTitleEl) {
+        if (!guidanceVideoEl) {
             finishGuidancePlayback();
             return;
         }
@@ -773,8 +772,12 @@ $(document).ready(function () {
 
         guidanceCurrentIndex = index;
         var item = guidanceQueue[index];
-        guidanceLabelEl.textContent = item.label || "";
-        guidanceTitleEl.textContent = item.title || item.label || "";
+        if (guidanceLabelEl) {
+            guidanceLabelEl.textContent = item.label || "";
+        }
+        if (guidanceTitleEl) {
+            guidanceTitleEl.textContent = item.title || item.label || "";
+        }
         guidanceVideoEl.src = item.video_path || "";
         guidanceVideoEl.currentTime = 0;
         guidanceVideoEl.onended = function () {
@@ -858,7 +861,7 @@ $(document).ready(function () {
     }
 
     function renderContent(items, swapIntervalSeconds) {
-        if (!contentSlidesEl || !contentEmptyEl || !contentIndicatorEl || !contentTitleEl) {
+        if (!contentSlidesEl || !contentEmptyEl) {
             return;
         }
 
@@ -872,7 +875,9 @@ $(document).ready(function () {
 
         stopDisplayRotation();
         contentSlidesEl.innerHTML = "";
-        contentIndicatorEl.innerHTML = "";
+        if (contentIndicatorEl) {
+            contentIndicatorEl.innerHTML = "";
+        }
         contentBackSignature = signature;
         contentBackIntervalSeconds = intervalSeconds;
         currentContentItems = items || [];
@@ -882,12 +887,10 @@ $(document).ready(function () {
         if (!items || !items.length) {
             resetDisplayRotation([], intervalSeconds);
             contentEmptyEl.style.display = "flex";
-            contentTitleEl.textContent = "放映コンテンツ";
             return;
         }
 
         contentEmptyEl.style.display = "none";
-        contentTitleEl.textContent = items.length > 1 ? "放映コンテンツ" : (items[0].title || "放映コンテンツ");
 
         items.forEach(function (item, index) {
             var slide = document.createElement("div");
@@ -910,22 +913,7 @@ $(document).ready(function () {
                 image.className = "h-full w-full object-cover";
                 slide.appendChild(image);
             }
-
-            var title = document.createElement("div");
-            title.className = "content-stage-title absolute inset-x-6 bottom-6 rounded-[22px] border border-white/12 bg-slate-950/60 px-5 py-4 text-2xl font-bold text-white backdrop-blur";
-            title.textContent = item.title || "コンテンツ";
-            slide.appendChild(title);
             contentSlidesEl.appendChild(slide);
-
-            var dot = document.createElement("span");
-            dot.className = "content-stage-dot h-3 rounded-full bg-white/20 transition-all duration-200";
-            if (index === 0) {
-                dot.classList.add("active");
-                dot.classList.add("bg-white", "w-10");
-            } else {
-                dot.classList.add("w-3");
-            }
-            contentIndicatorEl.appendChild(dot);
         });
 
         resetDisplayRotation(items, intervalSeconds);
