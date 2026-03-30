@@ -34,16 +34,6 @@ function notify_self_path(): string
     return $self !== '' ? $self : 'notify.php';
 }
 
-function notify_normalize_title(string $title, string $fallback): string
-{
-    $title = trim($title);
-    if ($title === '') {
-        $title = $fallback;
-    }
-
-    return function_exists('mb_substr') ? mb_substr($title, 0, 120, 'UTF-8') : substr($title, 0, 120);
-}
-
 function notify_active_status_text(array $active_notice): string
 {
     if (empty($active_notice['active'])) {
@@ -63,16 +53,10 @@ function notify_build_cards(array $definitions, array $state, string $selected_k
 
     foreach ($definitions as $key => $definition) {
         $item = $state['items'][$key] ?? array();
-        $title = trim((string)($item['title'] ?? $definition['label']));
-        if ($title === '') {
-            $title = (string)$definition['label'];
-        }
-
         $cards[] = array(
             'key' => $key,
             'label' => (string)$definition['label'],
             'image_path' => trim((string)($item['image_path'] ?? '')),
-            'title' => $title,
             'is_selected' => $selected_key === $key,
         );
     }
@@ -99,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('通知種別を選択してください。');
             }
 
-            $title = notify_normalize_title((string)($_POST['title'] ?? ''), (string)$definitions[$notify_key]['label']);
             $state = notify_load_state();
             $old_path = trim((string)($state['items'][$notify_key]['image_path'] ?? ''));
             $image_path = notify_store_uploaded_image(
@@ -108,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
             try {
-                $state['items'][$notify_key]['title'] = $title;
                 $state['items'][$notify_key]['image_path'] = $image_path;
                 $state['items'][$notify_key]['updated_at'] = date('c');
                 notify_save_state($state);
@@ -257,7 +239,7 @@ $notice_cards = notify_build_cards($definitions, $state, $selected_key);
                                 <?php if ($card['image_path'] !== '') { ?>
                                     <article class="content-card overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
                                         <div class="content-card-thumb aspect-[16/9] overflow-hidden bg-slate-100">
-                                            <img class="h-full w-full object-cover" src="<?php print(h($card['image_path'])); ?>" alt="<?php print(h($card['title'])); ?>">
+                                            <img class="h-full w-full object-cover" src="<?php print(h($card['image_path'])); ?>" alt="<?php print(h($card['label'])); ?>">
                                         </div>
                                         <div class="content-card-body space-y-3 px-5 py-5">
                                             <div class="content-card-tags flex flex-wrap gap-2">
@@ -278,17 +260,6 @@ $notice_cards = notify_build_cards($definitions, $state, $selected_key);
                                 <input type="hidden" name="s" value="<?php print($station_id); ?>">
                                 <input type="hidden" name="action" value="upload">
                                 <input type="hidden" name="notify_key" value="<?php print(h($card['key'])); ?>">
-
-                                <div class="<?php print(app_field_classes()); ?>">
-                                    <label class="<?php print(app_label_classes()); ?>" for="notifyTitle_<?php print(h($card['key'])); ?>">タイトル</label>
-                                    <input
-                                        id="notifyTitle_<?php print(h($card['key'])); ?>"
-                                        class="<?php print(app_input_classes()); ?>"
-                                        name="title"
-                                        type="text"
-                                        maxlength="120"
-                                        value="<?php print(h($card['title'])); ?>">
-                                </div>
                                 <div class="<?php print(app_field_classes()); ?>">
                                     <label class="<?php print(app_label_classes()); ?>" for="notifyFile_<?php print(h($card['key'])); ?>">画像ファイル</label>
                                     <input

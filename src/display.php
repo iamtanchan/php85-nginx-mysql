@@ -76,6 +76,79 @@ $station_name_en = $station_names['en'];
     <?php render_app_head('時刻表表示システム', array(
         'jquery' => true,
     )); ?>
+    <style>
+        #displayShell {
+            height: 100vh;
+        }
+
+        .display-main {
+            min-height: 0;
+        }
+
+        #tableStage,
+        #tableStage .table-wrap,
+        #timetable {
+            height: 100%;
+        }
+
+        #timetable {
+            border-collapse: collapse;
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        #timetable thead {
+            display: block;
+        }
+
+        #timetable thead tr,
+        #timetable tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        #timetable th,
+        #timetable td {
+            width: 25%;
+        }
+
+        #timetable thead th {
+            padding: 1rem 1.25rem;
+        }
+
+        #timetable tbody {
+            display: grid;
+            grid-template-rows: repeat(var(--display-row-count), minmax(0, 1fr));
+            height: 100%;
+        }
+
+        #timetable tbody tr {
+            min-height: 0;
+        }
+
+        #timetable tbody tr>td {
+            height: 100%;
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid rgb(255 255 255 / 0.08);
+            vertical-align: middle;
+        }
+
+        #item .col_time,
+        #item .col_ship,
+        #item .destination,
+        #item .col_status {
+            color: #fff;
+            font-size: clamp(1.9rem, 3vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        #item .col_time {
+            font-size: clamp(2.6rem, 4.8vw, 5.2rem);
+            letter-spacing: 0.06em;
+        }
+    </style>
 </head>
 
 <body class="<?php print(app_body_classes('display')); ?>">
@@ -85,43 +158,41 @@ $station_name_en = $station_names['en'];
     <div id="english_swap_enabled" hidden><?php print($show_english ? '1' : '0'); ?></div>
 
     <div id="displayShell" class="display-shell mx-auto flex min-h-screen w-full max-w-[1920px] flex-col gap-5 px-5 py-5 transition-opacity duration-300 lg:px-8 lg:py-8">
-        <div class="display-header flex flex-col gap-4 rounded-[32px] border border-white/12 bg-white/8 px-6 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.24)] backdrop-blur-xl lg:flex-row lg:items-end lg:justify-between">
+        <div class="display-header flex flex-col gap-3 rounded-3xl bg-white/10 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div
                 id="displayTitle"
-                class="display-title text-[clamp(2rem,3.6vw,4.75rem)] font-extrabold leading-[0.95] tracking-[0.01em] text-white"
+                class="display-title text-[clamp(2rem,3.2vw,4rem)] font-bold text-white"
                 data-station-jp="<?php print(h($station_name_jp)); ?>"
                 data-station-en="<?php print(h($station_name_en)); ?>">時刻表　<?php print(h($station_name_jp)); ?>発</div>
-            <div class="clock-block rounded-[28px] border border-white/12 bg-slate-950/40 px-5 py-4 text-right">
-                <div id="clockLabel" class="clock-label text-xs font-semibold uppercase tracking-[0.24em] text-white/60">現在時刻</div>
-                <div id="current_time" class="clock-value mt-2 text-[clamp(2.25rem,4vw,4.25rem)] font-bold tracking-[0.08em] text-white">--:--</div>
+            <div class="clock-block self-end rounded-2xl bg-slate-900/55 px-4 py-3 text-right sm:self-auto">
+                <div id="clockLabel" class="clock-label text-xs font-semibold uppercase text-white/70">現在時刻</div>
+                <div id="current_time" class="clock-value mt-1 text-[clamp(2rem,3.8vw,3.8rem)] font-bold text-white">--:--</div>
             </div>
         </div>
 
         <div class="display-main flex-1">
-            <div class="display-panel table-panel active" id="tableStage">
-                <div class="table-wrap overflow-hidden rounded-[34px] border border-white/12 bg-slate-950/45 shadow-[0_30px_90px_rgba(15,23,42,0.32)] backdrop-blur-xl">
-                    <table class="timetable min-w-full table-fixed" id="timetable" style="--display-row-count: <?php print((int)$row_count); ?>;">
+            <div class="display-panel table-panel active h-full" id="tableStage">
+                <div class="table-wrap h-full overflow-hidden rounded-[34px] border border-white/12 bg-slate-950/45 shadow-[0_30px_90px_rgba(15,23,42,0.32)] backdrop-blur-xl">
+                    <table class="timetable h-full min-w-full table-fixed" id="timetable" style="--display-row-count: <?php print((int)$row_count); ?>;">
                         <thead>
                             <tr>
-                                <th id="headerTime" class="cols bg-white/10 px-5 py-4 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">時刻</th>
-                                <th id="headerShip" class="cols4 bg-white/10 px-5 py-4 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">艇名</th>
-                                <th id="headerDestination" class="cols2 bg-white/10 px-5 py-4 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">行き先</th>
-                                <th id="headerStatus" class="cols1 bg-white/10 px-5 py-4 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">乗船案内</th>
+                                <th id="headerTime" class="bg-white/10 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">時刻</th>
+                                <th id="headerShip" class="bg-white/10 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">艇名</th>
+                                <th id="headerDestination" class="bg-white/10 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">行き先</th>
+                                <th id="headerStatus" class="bg-white/10 text-left text-sm font-semibold uppercase tracking-[0.18em] text-white/70">乗船案内</th>
                             </tr>
                         </thead>
                         <tbody id="item">
                             <?php for ($cnt = 0; $cnt < $row_count; $cnt++) { ?>
-                                <tr id="table_col" class="odd:bg-white/0 even:bg-white/[0.03]">
-                                    <td id="col_time" class="border-b border-white/8 px-5 py-6 align-top">
-                                        <p class="col_time text-[clamp(2.1rem,4vw,4rem)] font-bold tracking-[0.06em] text-white"></p>
+                                <tr>
+                                    <td>
+                                        <p class="col_time"></p>
                                     </td>
-                                    <td id="col_ship" class="col_ship border-b border-white/8 px-5 py-6 text-[clamp(1.15rem,2vw,2rem)] font-semibold leading-tight text-white"></td>
-                                    <td id="col_destination" class="col_destination border-b border-white/8 px-5 py-6 align-top">
-                                        <div class="col_badge_float mb-3 w-fit rounded-full bg-blue-500/15 px-3 py-1 text-sm font-semibold text-blue-100" style="display:none"></div>
-                                        <p class="destination text-[clamp(1.2rem,2.2vw,2.3rem)] font-semibold leading-tight text-white"></p>
-                                        <p class="destinatione mt-2 text-lg leading-7 text-white/55"></p>
+                                    <td class="col_ship"></td>
+                                    <td class="col_destination">
+                                        <p class="destination"></p>
                                     </td>
-                                    <td id="col_status" class="col_status border-b border-white/8 px-5 py-6 align-top text-[clamp(1rem,1.8vw,1.55rem)] font-semibold text-white"></td>
+                                    <td class="col_status"></td>
                                 </tr>
                             <?php } ?>
                         </tbody>

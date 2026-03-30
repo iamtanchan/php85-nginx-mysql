@@ -271,26 +271,18 @@ $(document).ready(function () {
             var time = String(row.time || "").substr(0, 5);
             var ship = selectLanguageValue(row.ship, row.shipe);
             var station = selectLanguageValue(row.station, row.statione);
-            var stationSecondary = selectSecondaryValue(row.station, row.statione);
-            var badgeLabel = selectLanguageValue(row.badge_label, row.badge_label_e);
 
             $(".col_time").eq(cnt).text(time);
             $(".col_ship").eq(cnt).text(ship);
             $(".destination").eq(cnt).text(station);
-            $(".destinatione").eq(cnt).text(stationSecondary);
-            $(".col_badge_float").eq(cnt).text(badgeLabel);
-            $(".col_badge_float").eq(cnt).toggle(!!badgeLabel);
-            $(".col_status").eq(cnt).html(renderStatusCell(row));
+            $(".col_status").eq(cnt).text(renderStatusCell(row));
         }
 
         for (; cnt < maxRows; cnt++) {
             $(".col_time").eq(cnt).text("");
             $(".col_ship").eq(cnt).text("");
             $(".destination").eq(cnt).text("");
-            $(".destinatione").eq(cnt).text("");
-            $(".col_badge_float").eq(cnt).text("");
-            $(".col_badge_float").eq(cnt).hide();
-            $(".col_status").eq(cnt).html("");
+            $(".col_status").eq(cnt).text("");
         }
     }
 
@@ -398,10 +390,7 @@ $(document).ready(function () {
 
     function renderStatusCell(d) {
         if (d.boarding_text) {
-            var cls = d.boarding_blink === "1"
-                ? "rounded-full border border-amber-300 bg-amber-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-amber-300/40 animate-pulse"
-                : "rounded-full border border-blue-500 bg-blue-500 px-4 py-2 text-center text-base font-bold text-white shadow-lg shadow-blue-500/30";
-            return "<p class='" + cls + "'>" + labelByLanguage("乗船案内中", "Boarding") + "</p>";
+            return labelByLanguage("乗船案内中", "Boarding");
         }
 
         if (mode === 1 && d.boarding_start_hm) {
@@ -412,20 +401,20 @@ $(document).ready(function () {
                     ? (" (" + d.minutes_to_boarding + " min)")
                     : (" (" + d.minutes_to_boarding + "分)");
             }
-            return "<p class='rounded-[22px] border border-white/12 bg-white/6 px-4 py-3 text-sm font-medium leading-6 text-white/74'>" + hint + "</p>";
+            return hint;
         }
 
         switch (String(d.status || "")) {
             case "0":
                 return "";
             case "1":
-                return "<p class='rounded-full border border-blue-500 bg-blue-500 px-4 py-2 text-center text-base font-bold text-white shadow-lg shadow-blue-500/30'>" + labelByLanguage("乗船案内中", "Boarding") + "</p>";
+                return labelByLanguage("乗船案内中", "Boarding");
             case "2":
-                return "<p class='rounded-full border border-rose-300 bg-rose-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-rose-300/35'>" + labelByLanguage("完売", "Sold Out") + "</p>";
+                return labelByLanguage("完売", "Sold Out");
             case "3":
-                return "<p class='rounded-full border border-amber-300 bg-amber-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-amber-300/40'>" + labelByLanguage("遅延", "Delayed") + "</p>";
+                return labelByLanguage("遅延", "Delayed");
             case "4":
-                return "<p class='rounded-full border border-fuchsia-300 bg-fuchsia-300 px-4 py-2 text-center text-base font-bold text-slate-950 shadow-lg shadow-fuchsia-300/35'>" + labelByLanguage("乗船遅延中", "Boarding Delayed") + "</p>";
+                return labelByLanguage("乗船遅延中", "Boarding Delayed");
             default:
                 return "";
         }
