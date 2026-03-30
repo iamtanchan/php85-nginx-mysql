@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 const APP_ENV_FILE = __DIR__ . '/../.env';
@@ -101,6 +102,23 @@ function app_required_env(string $name): string
     );
 }
 
+function app_required_env_any(array $names): string
+{
+    foreach ($names as $name) {
+        $value = app_env($name);
+        if ($value !== null) {
+            return $value;
+        }
+    }
+
+    throw new RuntimeException(
+        sprintf(
+            'Environment variable %s is not set. Copy .env.example to .env and update the database settings.',
+            implode(' or ', $names)
+        )
+    );
+}
+
 function app_create_database_connection(): PDO
 {
     app_load_env_file(APP_ENV_FILE);
@@ -108,7 +126,7 @@ function app_create_database_connection(): PDO
     $dsn = trim((string)app_env('DB_DSN', ''));
     if ($dsn === '') {
         $host = app_required_env('DB_HOST');
-        $name = app_required_env('DB_NAME');
+        $name = app_required_env_any(array('DB_NAME', 'DB_DATABASE'));
         $charset = trim((string)app_env('DB_CHARSET', 'utf8'));
         $port = trim((string)app_env('DB_PORT', ''));
 
@@ -126,8 +144,8 @@ function app_create_database_connection(): PDO
 
     return new PDO(
         $dsn,
-        app_required_env('DB_USER'),
-        app_required_env('DB_PASS'),
+        app_required_env_any(array('DB_USER', 'DB_USERNAME')),
+        app_required_env_any(array('DB_PASS', 'DB_PASSWORD')),
         array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         )
