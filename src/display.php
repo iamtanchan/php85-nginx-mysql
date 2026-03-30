@@ -148,6 +148,54 @@ $station_name_en = $station_names['en'];
             font-size: clamp(2.6rem, 4.8vw, 5.2rem);
             letter-spacing: 0.06em;
         }
+
+        #item .col_destination {
+            position: relative;
+        }
+
+        #item .col_destination .col_badge_float {
+            position: absolute;
+            top: 0.45rem;
+            right: 0;
+            margin: 0;
+            z-index: 2;
+            white-space: nowrap;
+            pointer-events: none;
+            border-radius: 999px;
+            background: rgb(59 130 246 / 0.18);
+            padding: 0.3rem 0.85rem;
+            color: rgb(191 219 254);
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        #item .col_status.status-boarding-active {
+            color: #fca5a5;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        #item .col_status.status-boarding-blink {
+            animation: boarding-status-blink 0.9s steps(2, end) infinite;
+        }
+
+        @keyframes boarding-status-blink {
+
+            0%,
+            49% {
+                color: #fca5a5;
+                opacity: 1;
+                text-shadow: 0 0 0.4rem rgb(248 113 113 / 0.5);
+            }
+
+            50%,
+            100% {
+                color: #dc2626;
+                opacity: 0.25;
+                text-shadow: none;
+            }
+        }
     </style>
 </head>
 
@@ -190,6 +238,7 @@ $station_name_en = $station_names['en'];
                                     </td>
                                     <td class="col_ship"></td>
                                     <td class="col_destination">
+                                        <div class="col_badge_float" style="display:none"></div>
                                         <p class="destination"></p>
                                     </td>
                                     <td class="col_status"></td>

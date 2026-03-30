@@ -271,18 +271,28 @@ $(document).ready(function () {
             var time = String(row.time || "").substr(0, 5);
             var ship = selectLanguageValue(row.ship, row.shipe);
             var station = selectLanguageValue(row.station, row.statione);
+            var badgeLabel = selectLanguageValue(row.badge_label, row.badge_label_e);
+            var statusCell = renderStatusCell(row);
+            var statusEl = $(".col_status").eq(cnt);
 
             $(".col_time").eq(cnt).text(time);
             $(".col_ship").eq(cnt).text(ship);
+            $(".col_badge_float").eq(cnt).text(badgeLabel);
+            $(".col_badge_float").eq(cnt).toggle(!!badgeLabel);
             $(".destination").eq(cnt).text(station);
-            $(".col_status").eq(cnt).text(renderStatusCell(row));
+            statusEl.text(statusCell.text);
+            statusEl.toggleClass("status-boarding-active", !!statusCell.boarding);
+            statusEl.toggleClass("status-boarding-blink", !!statusCell.blink);
         }
 
         for (; cnt < maxRows; cnt++) {
             $(".col_time").eq(cnt).text("");
             $(".col_ship").eq(cnt).text("");
+            $(".col_badge_float").eq(cnt).text("");
+            $(".col_badge_float").eq(cnt).hide();
             $(".destination").eq(cnt).text("");
             $(".col_status").eq(cnt).text("");
+            $(".col_status").eq(cnt).removeClass("status-boarding-active status-boarding-blink");
         }
     }
 
@@ -389,8 +399,17 @@ $(document).ready(function () {
     }
 
     function renderStatusCell(d) {
+        var cell = {
+            text: "",
+            boarding: false,
+            blink: false
+        };
+
         if (d.boarding_text) {
-            return labelByLanguage("乗船案内中", "Boarding");
+            cell.text = labelByLanguage("乗船案内中", "Boarding");
+            cell.boarding = true;
+            cell.blink = String(d.boarding_blink || "") === "1";
+            return cell;
         }
 
         if (mode === 1 && d.boarding_start_hm) {
@@ -401,23 +420,32 @@ $(document).ready(function () {
                     ? (" (" + d.minutes_to_boarding + " min)")
                     : (" (" + d.minutes_to_boarding + "分)");
             }
-            return hint;
+            cell.text = hint;
+            return cell;
         }
 
         switch (String(d.status || "")) {
             case "0":
-                return "";
+                cell.text = "";
+                break;
             case "1":
-                return labelByLanguage("乗船案内中", "Boarding");
+                cell.text = labelByLanguage("乗船案内中", "Boarding");
+                break;
             case "2":
-                return labelByLanguage("完売", "Sold Out");
+                cell.text = labelByLanguage("完売", "Sold Out");
+                break;
             case "3":
-                return labelByLanguage("遅延", "Delayed");
+                cell.text = labelByLanguage("遅延", "Delayed");
+                break;
             case "4":
-                return labelByLanguage("乗船遅延中", "Boarding Delayed");
+                cell.text = labelByLanguage("乗船遅延中", "Boarding Delayed");
+                break;
             default:
-                return "";
+                cell.text = "";
+                break;
         }
+
+        return cell;
     }
 
     function stopDisplayRotation() {
