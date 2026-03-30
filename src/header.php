@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 if (!function_exists('shared_header_escape')) {
@@ -16,7 +17,7 @@ if ($shared_header_station_id > 0) {
     $shared_header_master_href .= '?s=' . $shared_header_station_id;
 }
 ?>
-<header class="shared-page-header <?php print(app_header_classes()); ?>">
+<header class="shared-page-header <?php print(app_header_classes('mb-4')); ?>">
     <div class="shared-page-header-copy relative z-[1] space-y-3">
         <div class="shared-page-header-station text-[clamp(1.85rem,3vw,3.2rem)] font-extrabold leading-none tracking-[0.01em] text-slate-950"><?php print(shared_header_escape($shared_header_station_name . '港')); ?></div>
         <div class="shared-page-header-title max-w-3xl text-sm font-medium tracking-[0.02em] text-slate-500 sm:text-base"><?php print(shared_header_escape($shared_header_page_title . '画面')); ?></div>

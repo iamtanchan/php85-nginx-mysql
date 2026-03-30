@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var card = document.createElement('div');
         var thumbHtml = item.type === 'movie'
-            ? '<div class="content-selected-thumb js-content-preview relative aspect-[16/10] overflow-hidden rounded-[22px] bg-slate-100" data-preview-type="movie" data-preview-src="' + escapeHtml(item.value) + '" data-preview-title="' + escapeHtml(item.title || 'content') + '"><video class="h-full w-full object-cover" src="' + escapeHtml(item.value) + '" muted playsinline preload="metadata"></video><span class="content-card-play absolute inset-x-0 bottom-3 mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">&#9654;</span></div>'
+            ? '<div class="content-selected-thumb js-content-preview relative aspect-[16/10] overflow-hidden rounded-[22px] bg-slate-100" data-preview-type="movie" data-preview-src="' + escapeHtml(item.value) + '" data-preview-title="' + escapeHtml(item.title || 'content') + '"><video class="h-full w-full object-cover" src="' + escapeHtml(item.value) + '" muted playsinline preload="metadata"></video><span class="content-card-play absolute inset-0 m-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">&#9654;</span></div>'
             : '<div class="content-selected-thumb relative aspect-[16/10] overflow-hidden rounded-[22px] bg-slate-100"><img class="h-full w-full object-cover" src="' + escapeHtml(item.value) + '" alt="' + escapeHtml(item.title || 'content') + '"></div>';
 
         card.className = 'content-selected-card relative grid gap-4 rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition';

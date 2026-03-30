@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require_once __DIR__ . '/lib/admin_bootstrap.php';
@@ -195,86 +196,163 @@ foreach ($content_rows as $row) {
 <!doctype html>
 <html lang="ja">
 <!--suppress HtmlRequiredTitleElement -->
+
 <head>
     <?php render_app_head('コンテンツ管理'); ?>
 </head>
+
 <body class="<?php print(app_body_classes()); ?>">
-<div class="adm-page">
-    <div class="<?php print(app_page_shell_classes()); ?>">
-        <?php
-        $shared_header_station_name = $station_name;
-        $shared_header_page_title = 'コンテンツ管理';
-        $shared_header_station_id = $station_id;
-        require __DIR__ . '/header.php';
-        ?>
-        <?php if ($status_message !== '' && !$show_create_modal) { ?>
-            <div class="adm-alert <?php print(h($status_type)); ?> <?php print(app_alert_classes($status_type === 'error' ? 'error' : 'success')); ?>"><?php print(h($status_message)); ?></div>
-        <?php } ?>
+    <div class="adm-page">
+        <div class="<?php print(app_page_shell_classes()); ?>">
+            <?php
+            $shared_header_station_name = $station_name;
+            $shared_header_page_title = 'コンテンツ管理';
+            $shared_header_station_id = $station_id;
+            require __DIR__ . '/header.php';
+            ?>
+            <?php if ($status_message !== '' && !$show_create_modal) { ?>
+                <div class="adm-alert <?php print(h($status_type)); ?> <?php print(app_alert_classes($status_type === 'error' ? 'error' : 'success')); ?>"><?php print(h($status_message)); ?></div>
+            <?php } ?>
 
-        <div class="content-manage-actions mb-6 flex flex-wrap gap-2">
-            <a class="adm-btn adm-btn-soft <?php print(app_button_classes('soft')); ?>" href="content_setting.php?s=<?php print($station_id); ?>">コンテンツ設定</a>
-            <a
-                class="adm-btn <?php print(app_button_classes('primary')); ?>"
-                href="content_add.php?s=<?php print($station_id); ?>"
-                data-open-content-modal
-                data-target="<?php print($station_id); ?>"
-            >新規登録</a>
-        </div>
-
-        <section class="adm-panel content-manage-section <?php print(app_panel_classes('space-y-5')); ?>">
-            <div class="content-section-head flex items-center justify-between gap-3">
-                <div>
-                    <h2 class="adm-card-title text-3xl font-bold tracking-[0.01em] text-slate-950">共通コンテンツ</h2>
-                    <p class="adm-card-desc mt-2 text-sm leading-7 text-slate-500">共通コンテンツは削除不可。上書き登録</p>
-                </div>
-                <div class="content-section-count <?php print(app_badge_classes('brand')); ?>"><?php print(count($common_slot_map)); ?> / <?php print(CONTENT_COMMON_SLOT_MAX); ?></div>
+            <div class="content-manage-actions mb-6 flex flex-wrap gap-2">
+                <a class="adm-btn adm-btn-soft <?php print(app_button_classes('soft')); ?>" href="content_setting.php?s=<?php print($station_id); ?>">コンテンツ設定</a>
+                <a
+                    class="adm-btn <?php print(app_button_classes('primary')); ?>"
+                    href="content_add.php?s=<?php print($station_id); ?>"
+                    data-open-content-modal
+                    data-target="<?php print($station_id); ?>">新規登録</a>
             </div>
-            <div class="<?php print($content_grid_classes); ?>">
-                <?php for ($slot_no = 1; $slot_no <= CONTENT_COMMON_SLOT_MAX; $slot_no++) { ?>
-                    <?php if (isset($common_slot_map[$slot_no])) { $row = $common_slot_map[$slot_no]; ?>
-                        <article class="<?php print($content_card_base_classes); ?>">
-                            <div class="content-card-delete flex justify-end px-5 pt-5">
-                                <a
-                                    class="adm-btn adm-btn-soft <?php print(app_button_classes('soft', 'sm')); ?>"
-                                    href="content_add.php?s=<?php print($station_id); ?>&target=0&slot=<?php print($slot_no); ?>"
-                                    data-open-content-modal
-                                    data-target="0"
-                                    data-slot="<?php print($slot_no); ?>"
-                                >上書き登録</a>
-                            </div>
-                            <div
-                                class="content-card-thumb<?php if ((string)$row['content_type'] === 'movie') { print(' js-content-preview'); } ?> relative aspect-[16/9] overflow-hidden bg-slate-100"
-                                <?php if ((string)$row['content_type'] === 'movie') { ?>
+
+            <section class="adm-panel content-manage-section <?php print(app_panel_classes('space-y-5')); ?>">
+                <div class="content-section-head flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="adm-card-title text-3xl font-bold tracking-[0.01em] text-slate-950">共通コンテンツ</h2>
+                        <p class="adm-card-desc mt-2 text-sm leading-7 text-slate-500">共通コンテンツは削除不可。上書き登録</p>
+                    </div>
+                    <div class="content-section-count <?php print(app_badge_classes('brand')); ?>"><?php print(count($common_slot_map)); ?> / <?php print(CONTENT_COMMON_SLOT_MAX); ?></div>
+                </div>
+                <div class="<?php print($content_grid_classes); ?>">
+                    <?php for ($slot_no = 1; $slot_no <= CONTENT_COMMON_SLOT_MAX; $slot_no++) { ?>
+                        <?php if (isset($common_slot_map[$slot_no])) {
+                            $row = $common_slot_map[$slot_no]; ?>
+                            <article class="<?php print($content_card_base_classes); ?>">
+                                <div class="content-card-delete flex justify-end px-5 pt-5">
+                                    <a
+                                        class="adm-btn adm-btn-soft <?php print(app_button_classes('soft', 'sm')); ?>"
+                                        href="content_add.php?s=<?php print($station_id); ?>&target=0&slot=<?php print($slot_no); ?>"
+                                        data-open-content-modal
+                                        data-target="0"
+                                        data-slot="<?php print($slot_no); ?>">上書き登録</a>
+                                </div>
+                                <div
+                                    class="content-card-thumb<?php if ((string)$row['content_type'] === 'movie') {
+                                                                    print(' js-content-preview');
+                                                                } ?> relative aspect-[16/9] overflow-hidden bg-slate-100"
+                                    <?php if ((string)$row['content_type'] === 'movie') { ?>
                                     data-preview-type="movie"
                                     data-preview-src="<?php print(h((string)$row['content_value'])); ?>"
                                     data-preview-title="<?php print(h((string)$row['title'])); ?>"
-                                <?php } ?>
-                            >
+                                    <?php } ?>>
+                                    <?php if ((string)$row['content_type'] === 'movie') { ?>
+                                        <video class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" muted playsinline preload="metadata"></video>
+                                        <span class="content-card-play absolute inset-0 m-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">▶</span>
+                                    <?php } else { ?>
+                                        <img class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" alt="<?php print(h((string)$row['title'])); ?>">
+                                    <?php } ?>
+                                </div>
+                                <div class="<?php print($content_card_body_classes); ?>">
+                                    <div class="content-card-tags flex flex-wrap gap-2">
+                                        <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>">共通-<?php print($slot_no); ?></span>
+                                        <span class="content-card-tag <?php print(app_badge_classes('brand')); ?>"><?php print(h(content_type_label((string)$row['content_type']))); ?></span>
+                                    </div>
+                                    <div class="content-card-name text-base font-semibold text-slate-900"><?php print(h((string)$row['title'])); ?></div>
+                                </div>
+                            </article>
+                        <?php } else { ?>
+                            <a
+                                class="<?php print($content_card_empty_classes); ?>"
+                                href="content_add.php?s=<?php print($station_id); ?>&target=0&slot=<?php print($slot_no); ?>"
+                                data-open-content-modal
+                                data-target="0"
+                                data-slot="<?php print($slot_no); ?>">
+                                <div class="content-card-thumb flex aspect-[16/9] items-center justify-center bg-slate-100 px-6">
+                                    <span class="content-card-empty-thumb <?php print(app_badge_classes('neutral')); ?>">共通-<?php print($slot_no); ?></span>
+                                </div>
+                                <div class="<?php print($content_card_body_classes); ?>">
+                                    <div class="content-card-tags flex flex-wrap gap-2">
+                                        <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>">未登録</span>
+                                    </div>
+                                    <div class="content-card-empty-name text-base font-semibold text-slate-500">新規追加</div>
+                                </div>
+                            </a>
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+            </section>
+
+            <section class="adm-panel content-manage-section <?php print(app_panel_classes('space-y-5')); ?>">
+                <div class="content-section-head flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="adm-card-title text-3xl font-bold tracking-[0.01em] text-slate-950"><?php print(h($station_name)); ?></h2>
+                        <p class="adm-card-desc mt-2 text-sm leading-7 text-slate-500">停留所ごとに最大<?php print(CONTENT_STATION_MAX); ?>件まで登録できます。</p>
+                    </div>
+                    <div class="content-section-count <?php print(app_badge_classes('brand')); ?>"><?php print(count($station_rows)); ?> / <?php print(CONTENT_STATION_MAX); ?></div>
+                </div>
+                <div class="<?php print($content_grid_classes); ?>">
+                    <?php foreach ($station_rows as $row) {
+                        $row_id = (int)$row['id'];
+                        $locked = isset($all_selected_lookup[$row_id]); ?>
+                        <article class="<?php print($content_card_base_classes); ?> <?php if ($locked) {
+                                                                                        print('is-locked ring-2 ring-blue-200');
+                                                                                    } ?>">
+                            <form
+                                class="content-card-delete flex justify-end px-5 pt-5"
+                                method="post"
+                                action="<?php print(h($content_page_action)); ?>"
+                                data-ajax-skip="1"
+                                data-confirm-message="このコンテンツを削除しますか？"
+                                data-confirm-button="削除する"
+                                data-confirm-button-class="adm-btn adm-btn-danger">
+                                <input type="hidden" name="s" value="<?php print($station_id); ?>">
+                                <input type="hidden" name="action" value="bulk_delete">
+                                <input type="hidden" name="delete_ids[]" value="<?php print($row_id); ?>">
+                                <button class="content-card-delete-btn <?php print(app_button_classes('danger', 'sm')); ?>" type="submit" <?php if ($locked) {
+                                                                                                                                                print('disabled');
+                                                                                                                                            } ?>>削除</button>
+                            </form>
+                            <div
+                                class="content-card-thumb<?php if ((string)$row['content_type'] === 'movie') {
+                                                                print(' js-content-preview');
+                                                            } ?> relative aspect-[16/9] overflow-hidden bg-slate-100"
+                                <?php if ((string)$row['content_type'] === 'movie') { ?>
+                                data-preview-type="movie"
+                                data-preview-src="<?php print(h((string)$row['content_value'])); ?>"
+                                data-preview-title="<?php print(h((string)$row['title'])); ?>"
+                                <?php } ?>>
                                 <?php if ((string)$row['content_type'] === 'movie') { ?>
                                     <video class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" muted playsinline preload="metadata"></video>
-                                    <span class="content-card-play absolute inset-x-0 bottom-4 mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">▶</span>
+                                    <span class="content-card-play absolute inset-0 m-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">▶</span>
                                 <?php } else { ?>
                                     <img class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" alt="<?php print(h((string)$row['title'])); ?>">
                                 <?php } ?>
                             </div>
                             <div class="<?php print($content_card_body_classes); ?>">
                                 <div class="content-card-tags flex flex-wrap gap-2">
-                                    <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>">共通-<?php print($slot_no); ?></span>
-                                    <span class="content-card-tag <?php print(app_badge_classes('brand')); ?>"><?php print(h(content_type_label((string)$row['content_type']))); ?></span>
+                                    <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>"><?php print(h(content_type_label((string)$row['content_type']))); ?></span>
+                                    <?php if ($locked) { ?><span class="content-card-tag active <?php print(app_badge_classes('brand')); ?>">表示中</span><?php } ?>
                                 </div>
                                 <div class="content-card-name text-base font-semibold text-slate-900"><?php print(h((string)$row['title'])); ?></div>
                             </div>
                         </article>
-                    <?php } else { ?>
+                    <?php } ?>
+                    <?php for ($i = count($station_rows); $i < CONTENT_STATION_MAX; $i++) { ?>
                         <a
                             class="<?php print($content_card_empty_classes); ?>"
-                            href="content_add.php?s=<?php print($station_id); ?>&target=0&slot=<?php print($slot_no); ?>"
+                            href="content_add.php?s=<?php print($station_id); ?>&target=<?php print($station_id); ?>"
                             data-open-content-modal
-                            data-target="0"
-                            data-slot="<?php print($slot_no); ?>"
-                        >
+                            data-target="<?php print($station_id); ?>">
                             <div class="content-card-thumb flex aspect-[16/9] items-center justify-center bg-slate-100 px-6">
-                                <span class="content-card-empty-thumb <?php print(app_badge_classes('neutral')); ?>">共通-<?php print($slot_no); ?></span>
+                                <span class="content-card-empty-thumb <?php print(app_badge_classes('neutral')); ?>"><?php print(h($station_name)); ?></span>
                             </div>
                             <div class="<?php print($content_card_body_classes); ?>">
                                 <div class="content-card-tags flex flex-wrap gap-2">
@@ -284,174 +362,111 @@ foreach ($content_rows as $row) {
                             </div>
                         </a>
                     <?php } ?>
-                <?php } ?>
-            </div>
-        </section>
-
-        <section class="adm-panel content-manage-section <?php print(app_panel_classes('space-y-5')); ?>">
-            <div class="content-section-head flex items-center justify-between gap-3">
-                <div>
-                    <h2 class="adm-card-title text-3xl font-bold tracking-[0.01em] text-slate-950"><?php print(h($station_name)); ?></h2>
-                    <p class="adm-card-desc mt-2 text-sm leading-7 text-slate-500">停留所ごとに最大<?php print(CONTENT_STATION_MAX); ?>件まで登録できます。</p>
                 </div>
-                <div class="content-section-count <?php print(app_badge_classes('brand')); ?>"><?php print(count($station_rows)); ?> / <?php print(CONTENT_STATION_MAX); ?></div>
-            </div>
-            <div class="<?php print($content_grid_classes); ?>">
-                <?php foreach ($station_rows as $row) { $row_id = (int)$row['id']; $locked = isset($all_selected_lookup[$row_id]); ?>
-                    <article class="<?php print($content_card_base_classes); ?> <?php if ($locked) { print('is-locked ring-2 ring-blue-200'); } ?>">
+            </section>
+
+            <div
+                class="app-modal <?php print(app_modal_root_classes()); ?>"
+                id="contentCreateModal"
+                tabindex="-1"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="contentCreateModalTitle"
+                aria-hidden="true"
+                data-show-on-load="<?php print($show_create_modal ? '1' : '0'); ?>"
+                hidden>
+                <div class="app-modal-dialog app-modal-dialog-lg <?php print(app_modal_dialog_classes('lg')); ?>">
+                    <div class="app-modal-card content-create-modal-card <?php print(app_modal_card_classes()); ?>">
                         <form
-                            class="content-card-delete flex justify-end px-5 pt-5"
+                            id="contentCreateForm"
+                            class="content-add-form"
                             method="post"
                             action="<?php print(h($content_page_action)); ?>"
-                            data-ajax-skip="1"
-                            data-confirm-message="このコンテンツを削除しますか？"
-                            data-confirm-button="削除する"
-                            data-confirm-button-class="adm-btn adm-btn-danger"
-                        >
-                            <input type="hidden" name="s" value="<?php print($station_id); ?>">
-                            <input type="hidden" name="action" value="bulk_delete">
-                            <input type="hidden" name="delete_ids[]" value="<?php print($row_id); ?>">
-                            <button class="content-card-delete-btn <?php print(app_button_classes('danger', 'sm')); ?>" type="submit" <?php if ($locked) { print('disabled'); } ?>>削除</button>
+                            enctype="multipart/form-data"
+                            data-ajax-skip="1">
+                            <div class="app-modal-header <?php print(app_modal_header_classes()); ?>">
+                                <div>
+                                    <h2 class="app-modal-title text-2xl font-bold text-slate-950" id="contentCreateModalTitle">コンテンツ登録</h2>
+                                </div>
+                                <button type="button" class="app-modal-close <?php print(app_button_classes('ghost', 'sm', 'rounded-full px-3')); ?>" data-modal-close aria-label="閉じる">×</button>
+                            </div>
+
+                            <div class="app-modal-body content-create-modal-body <?php print(app_modal_body_classes()); ?>">
+                                <div id="contentCreateStatus">
+                                    <?php if ($show_create_modal && $status_message !== '') { ?>
+                                        <div class="adm-alert <?php print(h($status_type)); ?> <?php print(app_alert_classes($status_type === 'error' ? 'error' : 'success')); ?>"><?php print(h($status_message)); ?></div>
+                                    <?php } ?>
+                                </div>
+
+                                <input type="hidden" name="s" value="<?php print($station_id); ?>">
+                                <input type="hidden" name="action" value="save">
+
+                                <div class="content-create-grid grid gap-4 md:grid-cols-2">
+                                    <div class="adm-field <?php print(app_field_classes()); ?>">
+                                        <label class="<?php print(app_label_classes()); ?>" for="itemStation">対象</label>
+                                        <select id="itemStation" class="<?php print(app_select_classes()); ?>" name="item_station_id">
+                                            <?php foreach ($stations as $station) { ?>
+                                                <option value="<?php print((int)$station['id']); ?>" <?php if ($create_target === (string)$station['id']) {
+                                                                                                            print('selected');
+                                                                                                        } ?>><?php print(h((string)$station['name'])); ?></option>
+                                            <?php } ?>
+                                            <option value="0" <?php if ($create_target === '0') {
+                                                                    print('selected');
+                                                                } ?>>共通</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="adm-field content-add-slot-field <?php print(app_field_classes()); ?>" id="slotField">
+                                        <label class="<?php print(app_label_classes()); ?>" for="slotNo">共通枠</label>
+                                        <select id="slotNo" class="<?php print(app_select_classes()); ?>" name="slot_no">
+                                            <?php for ($slot_no = 1; $slot_no <= CONTENT_COMMON_SLOT_MAX; $slot_no++) { ?>
+                                                <option value="<?php print($slot_no); ?>" <?php if ($slot_no === $create_slot_no) {
+                                                                                                print('selected');
+                                                                                            } ?>><?php print($slot_no); ?>: <?php print(h(content_slot_title($common_slot_map, $slot_no))); ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="adm-field content-create-grid-wide <?php print(app_field_classes('md:col-span-2')); ?>">
+                                        <label class="<?php print(app_label_classes()); ?>" for="title">タイトル</label>
+                                        <input id="title" class="<?php print(app_input_classes()); ?>" name="title" type="text" maxlength="120" required value="<?php print(h($create_title)); ?>">
+                                    </div>
+
+                                    <div class="adm-field <?php print(app_field_classes()); ?>">
+                                        <label class="<?php print(app_label_classes()); ?>" for="contentType">種別</label>
+                                        <select id="contentType" class="<?php print(app_select_classes()); ?>" name="content_type">
+                                            <option value="image" <?php if ($create_content_type === 'image') {
+                                                                        print('selected');
+                                                                    } ?>>画像</option>
+                                            <option value="movie" <?php if ($create_content_type === 'movie') {
+                                                                        print('selected');
+                                                                    } ?>>動画</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="adm-field content-create-grid-wide <?php print(app_field_classes('md:col-span-2')); ?>">
+                                        <label class="<?php print(app_label_classes()); ?>" for="contentFile">ファイル</label>
+                                        <input id="contentFile" class="<?php print(app_input_classes()); ?>" name="content_file" type="file" accept="<?php print(h($file_accept)); ?>" required>
+                                        <div
+                                            class="<?php print(app_help_classes()); ?>"
+                                            id="fileHelp"
+                                            data-image-help="<?php print(h($image_help_text)); ?>"
+                                            data-video-help="<?php print(h($video_help_text)); ?>"><?php print(h($file_help_text)); ?></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="app-modal-footer app-modal-footer-between <?php print(app_modal_footer_classes(true)); ?>">
+                                <button class="adm-btn adm-btn-soft <?php print(app_button_classes('soft')); ?>" type="button" data-modal-close>閉じる</button>
+                                <button class="adm-btn adm-btn-pink <?php print(app_button_classes('primary')); ?>" type="submit">保存</button>
+                            </div>
                         </form>
-                        <div
-                            class="content-card-thumb<?php if ((string)$row['content_type'] === 'movie') { print(' js-content-preview'); } ?> relative aspect-[16/9] overflow-hidden bg-slate-100"
-                            <?php if ((string)$row['content_type'] === 'movie') { ?>
-                                data-preview-type="movie"
-                                data-preview-src="<?php print(h((string)$row['content_value'])); ?>"
-                                data-preview-title="<?php print(h((string)$row['title'])); ?>"
-                            <?php } ?>
-                        >
-                            <?php if ((string)$row['content_type'] === 'movie') { ?>
-                                <video class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" muted playsinline preload="metadata"></video>
-                                <span class="content-card-play absolute inset-x-0 bottom-4 mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-slate-950 shadow-lg">▶</span>
-                            <?php } else { ?>
-                                <img class="h-full w-full object-cover" src="<?php print(h((string)$row['content_value'])); ?>" alt="<?php print(h((string)$row['title'])); ?>">
-                            <?php } ?>
-                        </div>
-                        <div class="<?php print($content_card_body_classes); ?>">
-                            <div class="content-card-tags flex flex-wrap gap-2">
-                                <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>"><?php print(h(content_type_label((string)$row['content_type']))); ?></span>
-                                <?php if ($locked) { ?><span class="content-card-tag active <?php print(app_badge_classes('brand')); ?>">表示中</span><?php } ?>
-                            </div>
-                            <div class="content-card-name text-base font-semibold text-slate-900"><?php print(h((string)$row['title'])); ?></div>
-                        </div>
-                    </article>
-                <?php } ?>
-                <?php for ($i = count($station_rows); $i < CONTENT_STATION_MAX; $i++) { ?>
-                    <a
-                        class="<?php print($content_card_empty_classes); ?>"
-                        href="content_add.php?s=<?php print($station_id); ?>&target=<?php print($station_id); ?>"
-                        data-open-content-modal
-                        data-target="<?php print($station_id); ?>"
-                    >
-                        <div class="content-card-thumb flex aspect-[16/9] items-center justify-center bg-slate-100 px-6">
-                            <span class="content-card-empty-thumb <?php print(app_badge_classes('neutral')); ?>"><?php print(h($station_name)); ?></span>
-                        </div>
-                        <div class="<?php print($content_card_body_classes); ?>">
-                            <div class="content-card-tags flex flex-wrap gap-2">
-                                <span class="content-card-tag <?php print(app_badge_classes('neutral')); ?>">未登録</span>
-                            </div>
-                            <div class="content-card-empty-name text-base font-semibold text-slate-500">新規追加</div>
-                        </div>
-                    </a>
-                <?php } ?>
-            </div>
-        </section>
-
-        <div
-            class="app-modal <?php print(app_modal_root_classes()); ?>"
-            id="contentCreateModal"
-            tabindex="-1"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="contentCreateModalTitle"
-            aria-hidden="true"
-            data-show-on-load="<?php print($show_create_modal ? '1' : '0'); ?>"
-            hidden
-        >
-            <div class="app-modal-dialog app-modal-dialog-lg <?php print(app_modal_dialog_classes('lg')); ?>">
-                <div class="app-modal-card content-create-modal-card <?php print(app_modal_card_classes()); ?>">
-                    <form
-                        id="contentCreateForm"
-                        class="content-add-form"
-                        method="post"
-                        action="<?php print(h($content_page_action)); ?>"
-                        enctype="multipart/form-data"
-                        data-ajax-skip="1"
-                    >
-                        <div class="app-modal-header <?php print(app_modal_header_classes()); ?>">
-                            <div>
-                                <h2 class="app-modal-title text-2xl font-bold text-slate-950" id="contentCreateModalTitle">コンテンツ登録</h2>
-                            </div>
-                            <button type="button" class="app-modal-close <?php print(app_button_classes('ghost', 'sm', 'rounded-full px-3')); ?>" data-modal-close aria-label="閉じる">×</button>
-                        </div>
-
-                        <div class="app-modal-body content-create-modal-body <?php print(app_modal_body_classes()); ?>">
-                            <div id="contentCreateStatus">
-                                <?php if ($show_create_modal && $status_message !== '') { ?>
-                                    <div class="adm-alert <?php print(h($status_type)); ?> <?php print(app_alert_classes($status_type === 'error' ? 'error' : 'success')); ?>"><?php print(h($status_message)); ?></div>
-                                <?php } ?>
-                            </div>
-
-                            <input type="hidden" name="s" value="<?php print($station_id); ?>">
-                            <input type="hidden" name="action" value="save">
-
-                            <div class="content-create-grid grid gap-4 md:grid-cols-2">
-                                <div class="adm-field <?php print(app_field_classes()); ?>">
-                                    <label class="<?php print(app_label_classes()); ?>" for="itemStation">対象</label>
-                                    <select id="itemStation" class="<?php print(app_select_classes()); ?>" name="item_station_id">
-                                        <?php foreach ($stations as $station) { ?>
-                                            <option value="<?php print((int)$station['id']); ?>" <?php if ($create_target === (string)$station['id']) { print('selected'); } ?>><?php print(h((string)$station['name'])); ?></option>
-                                        <?php } ?>
-                                        <option value="0" <?php if ($create_target === '0') { print('selected'); } ?>>共通</option>
-                                    </select>
-                                </div>
-
-                                <div class="adm-field content-add-slot-field <?php print(app_field_classes()); ?>" id="slotField">
-                                    <label class="<?php print(app_label_classes()); ?>" for="slotNo">共通枠</label>
-                                    <select id="slotNo" class="<?php print(app_select_classes()); ?>" name="slot_no">
-                                        <?php for ($slot_no = 1; $slot_no <= CONTENT_COMMON_SLOT_MAX; $slot_no++) { ?>
-                                            <option value="<?php print($slot_no); ?>" <?php if ($slot_no === $create_slot_no) { print('selected'); } ?>><?php print($slot_no); ?>: <?php print(h(content_slot_title($common_slot_map, $slot_no))); ?></option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-
-                                <div class="adm-field content-create-grid-wide <?php print(app_field_classes('md:col-span-2')); ?>">
-                                    <label class="<?php print(app_label_classes()); ?>" for="title">タイトル</label>
-                                    <input id="title" class="<?php print(app_input_classes()); ?>" name="title" type="text" maxlength="120" required value="<?php print(h($create_title)); ?>">
-                                </div>
-
-                                <div class="adm-field <?php print(app_field_classes()); ?>">
-                                    <label class="<?php print(app_label_classes()); ?>" for="contentType">種別</label>
-                                    <select id="contentType" class="<?php print(app_select_classes()); ?>" name="content_type">
-                                        <option value="image" <?php if ($create_content_type === 'image') { print('selected'); } ?>>画像</option>
-                                        <option value="movie" <?php if ($create_content_type === 'movie') { print('selected'); } ?>>動画</option>
-                                    </select>
-                                </div>
-
-                                <div class="adm-field content-create-grid-wide <?php print(app_field_classes('md:col-span-2')); ?>">
-                                    <label class="<?php print(app_label_classes()); ?>" for="contentFile">ファイル</label>
-                                    <input id="contentFile" class="<?php print(app_input_classes()); ?>" name="content_file" type="file" accept="<?php print(h($file_accept)); ?>" required>
-                                    <div
-                                        class="<?php print(app_help_classes()); ?>"
-                                        id="fileHelp"
-                                        data-image-help="<?php print(h($image_help_text)); ?>"
-                                        data-video-help="<?php print(h($video_help_text)); ?>"
-                                    ><?php print(h($file_help_text)); ?></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="app-modal-footer app-modal-footer-between <?php print(app_modal_footer_classes(true)); ?>">
-                            <button class="adm-btn adm-btn-soft <?php print(app_button_classes('soft')); ?>" type="button" data-modal-close>閉じる</button>
-                            <button class="adm-btn adm-btn-pink <?php print(app_button_classes('primary')); ?>" type="submit">保存</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<?php render_app_scripts(array('js/content_preview.js?v=1.0.0', 'js/content_add.js?v=1.1.0', 'js/content_manage.js?v=1.0.1')); ?>
+    <?php render_app_scripts(array('js/content_preview.js?v=1.0.0', 'js/content_add.js?v=1.1.0', 'js/content_manage.js?v=1.0.1')); ?>
 </body>
+
 </html>
