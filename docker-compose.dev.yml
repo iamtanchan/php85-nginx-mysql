@@ -1,0 +1,17 @@
+services:
+  web:
+    working_dir: /var/www/src
+    volumes:
+      - ./src:/var/www/src
+      - ./src/data:/var/www/src/data
+      - ./src/uploads:/var/www/src/uploads
+      - ./ca-certificate.crt:/var/www/ca-certificate.crt:ro
+
+  nginx:
+    volumes:
+      - ./src:/var/www/src:ro
+      - ./src/uploads:/var/www/src/uploads:ro
+
+  mysql:
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
