@@ -1,0 +1,20 @@
+{
+    "lead_minutes": 2,
+    "items": {
+        "pre_boarding": {
+            "key": "pre_boarding",
+            "label": "乗船前の注意事項",
+            "title": "乗船前の注意事項",
+            "video_path": "uploads/guidance/guidance_pre_boarding_20260316_160020_80a0e0b970f40df1.mp4",
+            "updated_at": "2026-03-16T16:00:20+09:00"
+        },
+        "route_guidance": {
+            "key": "route_guidance",
+            "label": "ルート案内",
+            "title": "ルート案内",
+            "video_path": "uploads/guidance/guidance_route_guidance_20260316_160310_097e810f551598e5.mp4",
+            "updated_at": "2026-03-16T16:03:10+09:00"
+        }
+    },
+    "updated_at": "2026-03-30T17:23:06+09:00"
+}
