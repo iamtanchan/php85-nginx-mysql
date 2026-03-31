@@ -1,0 +1,569 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- ホスト: mysql
+-- 生成日時: 2026 年 3 月 30 日 06:22
+-- サーバのバージョン： 8.4.8
+-- PHP のバージョン: 8.3.30
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- データベース: `shiptimetable`
+--
+
+CREATE DATABASE IF NOT EXISTS `shiptimetable`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
+USE `shiptimetable`;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `badge`
+--
+
+CREATE TABLE `badge` (
+  `badge_id` int NOT NULL,
+  `label` varchar(100) DEFAULT NULL,
+  `label_e` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`badge_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `badge`
+--
+
+INSERT INTO `badge` (`badge_id`, `label`, `label_e`, `created_at`, `updated_at`) VALUES
+(0, '未選択', 'Not selected', '2026-03-02 08:23:41', '2026-03-19 03:15:26'),
+(1, '箱根ロープウェイに接続する最終便です', 'Last service connecting to Hakone Ropeway', '2026-03-02 07:20:39', '2026-03-19 03:15:26'),
+(2, '往復できる最終便です', 'Last round-trip service', '2026-03-02 07:20:39', '2026-03-19 03:15:26'),
+(3, '片道のみ/帰りの便はありません', 'One-way only / no return service', '2026-03-02 07:20:39', '2026-03-19 03:15:26'),
+(4, '荒天のため変則ダイヤ', 'Special timetable due to stormy weather', '2026-03-02 07:20:39', '2026-03-19 03:15:26'),
+(5, '荒天のためダイヤ変更の可能性あり', 'Timetable may change due to stormy weather', '2026-03-02 07:20:39', '2026-03-19 03:15:26'),
+(6, '臨時便', 'Extra service', '2026-03-02 07:20:39', '2026-03-19 03:15:26');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `content_display`
+--
+
+CREATE TABLE `content_display` (
+  `content_display_id` int UNSIGNED NOT NULL,
+  `station_id` int NOT NULL,
+  `content_id` int UNSIGNED NOT NULL,
+  `sort_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`content_display_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `content_display`
+--
+
+INSERT INTO `content_display` (`content_display_id`, `station_id`, `content_id`, `sort_order`, `created_at`, `updated_at`) VALUES
+(124, 1, 34, 1, '2026-03-23 10:18:05', '2026-03-23 10:18:05'),
+(125, 1, 35, 2, '2026-03-23 10:18:05', '2026-03-23 10:18:05'),
+(126, 1, 36, 3, '2026-03-23 10:18:05', '2026-03-23 10:18:05');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `content_display_setting`
+--
+
+CREATE TABLE `content_display_setting` (
+  `station_id` int NOT NULL,
+  `swap_interval_seconds` int NOT NULL DEFAULT '8',
+  `rotation_seconds` int NOT NULL DEFAULT '8',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `content_display_setting`
+--
+
+INSERT INTO `content_display_setting` (`station_id`, `swap_interval_seconds`, `rotation_seconds`, `created_at`, `updated_at`) VALUES
+(1, 0, 8, '2026-03-13 06:26:48', '2026-03-23 10:18:05');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `content_item`
+--
+
+CREATE TABLE `content_item` (
+  `content_item_id` int UNSIGNED NOT NULL,
+  `station_id` int NOT NULL DEFAULT '0',
+  `slot_no` int DEFAULT NULL,
+  `title` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `content_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'text',
+  `content_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` int NOT NULL DEFAULT '100',
+  `note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`content_item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `content_item`
+--
+
+INSERT INTO `content_item` (`content_item_id`, `station_id`, `slot_no`, `title`, `content_type`, `content_value`, `start_at`, `end_at`, `is_active`, `sort_order`, `note`, `created_at`, `updated_at`) VALUES
+(30, 0, 4, '4', 'movie', 'uploads/content/video_20260323_190108_e90d086c0f9b95ba.mp4', NULL, NULL, 1, 4, '', '2026-03-13 06:32:31', '2026-03-23 10:01:08'),
+(31, 0, 5, '5', 'movie', 'uploads/content/video_20260323_190117_689a777d032c5b77.mp4', NULL, NULL, 1, 5, '', '2026-03-13 06:32:48', '2026-03-23 10:01:17'),
+(32, 3, NULL, '3', 'movie', 'uploads/content/video_20260313_153826_c55aff2b27a08a17.mp4', NULL, NULL, 1, 10, '', '2026-03-13 06:38:26', '2026-03-13 06:38:26'),
+(33, 2, NULL, '3', 'movie', 'uploads/content/video_20260313_153844_fc55c641d0a13c95.mp4', NULL, NULL, 1, 10, '', '2026-03-13 06:38:44', '2026-03-13 06:38:44'),
+(34, 0, 1, '1', 'movie', 'uploads/content/video_20260323_185606_46aad493baa5076d.mp4', NULL, NULL, 1, 1, '', '2026-03-13 06:39:50', '2026-03-23 09:56:06'),
+(35, 0, 2, '2', 'movie', 'uploads/content/video_20260323_185617_976c1bc56fa71610.mp4', NULL, NULL, 1, 2, '', '2026-03-13 06:46:57', '2026-03-23 09:56:17'),
+(36, 0, 3, '3', 'movie', 'uploads/content/video_20260323_190058_1b794791e63e9885.mp4', NULL, NULL, 1, 3, '', '2026-03-13 06:47:08', '2026-03-23 10:00:58'),
+(42, 1, NULL, '1', 'movie', 'uploads/content/video_20260323_185630_d0ea123206b81213.mp4', NULL, NULL, 1, 10, '', '2026-03-23 09:56:30', '2026-03-23 09:56:30'),
+(44, 1, NULL, '3', 'movie', 'uploads/content/video_20260323_185920_3417b259a62e3828.mp4', NULL, NULL, 1, 30, '', '2026-03-23 09:59:20', '2026-03-23 09:59:20'),
+(45, 1, NULL, '4', 'movie', 'uploads/content/video_20260323_185947_a7e01f3af5470df5.mp4', NULL, NULL, 1, 40, '', '2026-03-23 09:59:47', '2026-03-23 09:59:47');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `destination`
+--
+
+CREATE TABLE `destination` (
+  `destination_id` int NOT NULL,
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `name_e` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`destination_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `destination`
+--
+
+INSERT INTO `destination` (`destination_id`, `name`, `name_e`, `created_at`, `updated_at`) VALUES
+(1, '桃源台1', 'Togendai1', '2026-03-09 07:19:40', '2026-03-09 08:01:34'),
+(2, '元箱根', 'Motohakone', '2026-03-09 07:19:40', '2026-03-09 07:19:40'),
+(3, '箱根町', 'Hakone Town', '2026-03-09 07:19:40', '2026-03-09 07:19:40');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `display`
+--
+
+CREATE TABLE `display` (
+  `display_id` int NOT NULL,
+  `reset` datetime NOT NULL,
+  `ch` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`display_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `display`
+--
+
+INSERT INTO `display` (`display_id`, `reset`, `ch`, `created_at`, `updated_at`) VALUES
+(1, '2019-11-01 08:30:10', 83, '2026-03-02 07:20:39', '2026-03-23 10:18:05'),
+(2, '2019-11-01 09:00:11', 49, '2026-03-02 07:20:39', '2026-03-16 16:11:06'),
+(3, '0000-00-00 00:00:00', 66, '2026-03-02 07:20:39', '2026-03-09 03:19:07'),
+(4, '0000-00-00 00:00:00', 94, '2026-03-02 07:20:39', '2026-03-02 07:20:39');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `display_language_setting`
+--
+
+CREATE TABLE `display_language_setting` (
+  `station_id` int NOT NULL,
+  `english_enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `display_language_setting`
+--
+
+INSERT INTO `display_language_setting` (`station_id`, `english_enabled`, `created_at`, `updated_at`) VALUES
+(1, 1, '2026-03-19 08:32:07', '2026-03-23 06:11:28');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `login`
+--
+
+CREATE TABLE `login` (
+  `login_id` varchar(50) NOT NULL DEFAULT '',
+  `pass` varchar(50) DEFAULT NULL,
+  `auth` int DEFAULT NULL,
+  `station_id` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`login_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `login`
+--
+
+INSERT INTO `login` (`login_id`, `pass`, `auth`, `station_id`, `created_at`, `updated_at`) VALUES
+('test', 'test', 0, 1, '2026-03-02 07:20:39', '2026-03-02 07:20:39');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `message`
+--
+
+CREATE TABLE `message` (
+  `station_id` int NOT NULL,
+  `message` varchar(100) DEFAULT NULL,
+  `message_e` varchar(100) DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_visible` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `message_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`message_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `message`
+--
+
+INSERT INTO `message` (`station_id`, `message`, `message_e`, `sort_order`, `is_visible`, `created_at`, `updated_at`, `message_id`) VALUES
+(1, 'アメイジングポケット！', 'Hello!', 1, 1, '2026-03-11 07:00:20', '2026-03-23 09:32:17', 7),
+(1, 'こんにちは！', 'Hello!', 8, 1, '2026-03-11 07:07:11', '2026-03-30 06:05:47', 8),
+(1, 'fdseeee', 'fdsf', 7, 1, '2026-03-19 05:23:35', '2026-03-30 06:05:46', 22),
+(2, 's44444', '444444', 1, 1, '2026-03-19 05:24:08', '2026-03-19 05:24:08', 23);
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `message_display_setting`
+--
+
+CREATE TABLE `message_display_setting` (
+  `station_id` int NOT NULL,
+  `drag_speed` int NOT NULL DEFAULT '4',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `message_display_setting`
+--
+
+INSERT INTO `message_display_setting` (`station_id`, `drag_speed`, `created_at`, `updated_at`) VALUES
+(1, 10, '2026-03-11 06:21:23', '2026-03-23 09:29:52'),
+(2, 2, '2026-03-11 08:06:09', '2026-03-11 08:06:09');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `schedule`
+--
+
+CREATE TABLE `schedule` (
+  `schedule_id` int UNSIGNED NOT NULL,
+  `station_id` int NOT NULL,
+  `season_id` int UNSIGNED NOT NULL DEFAULT '0',
+  `departure_time` time DEFAULT NULL,
+  `ship_id` int NOT NULL DEFAULT '0',
+  `destination_id` int NOT NULL DEFAULT '0',
+  `priority` int NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`schedule_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `schedule`
+--
+
+INSERT INTO `schedule` (`schedule_id`, `station_id`, `season_id`, `departure_time`, `ship_id`, `destination_id`, `priority`, `is_active`, `note`, `created_at`, `updated_at`) VALUES
+(5, 1, 2, '21:46:00', 1, 1, 2, 1, '', '2026-03-09 08:43:39', '2026-03-09 08:43:39'),
+(9, 1, 1, '02:03:00', 2, 2, 1, 1, '', '2026-03-11 02:42:46', '2026-03-23 09:33:00'),
+(10, 1, 1, '01:03:00', 1, 3, 2, 1, '', '2026-03-11 02:42:55', '2026-03-23 09:33:13'),
+(13, 1, 4, '15:51:00', 2, 3, 1, 1, '', '2026-03-11 02:48:50', '2026-03-11 02:48:50'),
+(16, 2, 1, '16:42:00', 2, 2, 1, 1, '', '2026-03-11 07:40:00', '2026-03-11 07:40:00'),
+(17, 2, 1, '16:45:00', 1, 1, 2, 1, '', '2026-03-11 07:40:12', '2026-03-11 07:40:12'),
+(18, 2, 2, '16:44:00', 2, 2, 1, 1, '', '2026-03-11 07:40:22', '2026-03-11 07:40:22'),
+(20, 1, 5, '17:38:00', 3, 2, 2, 1, '', '2026-03-11 08:34:15', '2026-03-11 08:34:15'),
+(22, 1, 1, '19:27:00', 2, 2, 3, 1, '', '2026-03-17 04:26:23', '2026-03-23 10:15:31'),
+(23, 1, 5, '13:27:00', 3, 3, 3, 1, '', '2026-03-17 04:26:54', '2026-03-17 04:26:54'),
+(24, 1, 3, '17:51:00', 2, 1, 1, 1, '', '2026-03-18 08:50:44', '2026-03-18 08:50:44'),
+(25, 1, 3, '17:52:00', 2, 2, 2, 1, '', '2026-03-18 08:50:53', '2026-03-18 08:50:53'),
+(26, 1, 3, '17:53:00', 3, 1, 3, 1, '', '2026-03-18 08:51:03', '2026-03-18 08:51:03'),
+(27, 1, 1, '20:02:00', 2, 1, 4, 1, '', '2026-03-19 05:59:40', '2026-03-23 10:15:31'),
+(31, 1, 1, '02:43:00', 2, 1, 5, 1, '', '2026-03-23 09:39:35', '2026-03-23 09:39:42'),
+(33, 1, 1, '18:45:00', 1, 1, 6, 1, '', '2026-03-23 09:43:06', '2026-03-23 09:43:06');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `season`
+--
+
+CREATE TABLE `season` (
+  `season_id` int UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`season_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- テーブルのデータのダンプ `season`
+--
+
+INSERT INTO `season` (`season_id`, `name`, `start_date`, `end_date`, `created_at`, `updated_at`) VALUES
+(1, 'キダイヤ', '2026-01-01', '2026-01-23', '2026-03-06 08:45:54', '2026-03-20 14:59:52'),
+(2, 'シーズンダイヤ1', '2026-03-15', '2026-03-15', '2026-03-06 08:45:54', '2026-03-16 15:01:23'),
+(3, 'シーズンダイヤ2', '2026-05-01', '2026-06-30', '2026-03-06 08:45:54', '2026-03-09 04:11:11'),
+(4, 'トップシーズンダイヤ', '2026-07-01', '2026-08-31', '2026-03-06 08:45:54', '2026-03-09 04:11:34'),
+(5, 'オフシーズンダイヤ', '2026-03-16', '2026-04-30', '2026-03-06 08:45:54', '2026-03-16 02:54:37');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `ship`
+--
+
+CREATE TABLE `ship` (
+  `ship_id` int NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `name_e` varchar(30) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ship_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `ship`
+--
+
+INSERT INTO `ship` (`ship_id`, `name`, `name_e`, `created_at`, `updated_at`) VALUES
+(1, 'ヒミコ', 'Himiko', '2026-03-02 07:20:39', '2026-03-02 07:20:39'),
+(2, 'ホタルナ', 'Hotaluna', '2026-03-02 07:20:39', '2026-03-02 07:20:39'),
+(3, 'エメラルダス', 'Emeraldas', '2026-03-02 07:20:39', '2026-03-02 07:20:39');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `station`
+--
+
+CREATE TABLE `station` (
+  `station_id` int NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `name_e` varchar(30) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`station_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- テーブルのデータのダンプ `station`
+--
+
+INSERT INTO `station` (`station_id`, `name`, `name_e`, `created_at`, `updated_at`) VALUES
+(1, '桃源台', 'Togendai', '2026-03-02 07:20:39', '2026-03-09 08:01:03'),
+(2, '元箱根', 'Motohakone', '2026-03-02 07:20:39', '2026-03-09 01:54:14'),
+(3, '箱根町', 'Hakone Town', '2026-03-02 07:20:39', '2026-03-09 01:54:16');
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `timetable`
+--
+
+CREATE TABLE `timetable` (
+  `timetable_id` int UNSIGNED NOT NULL,
+  `station_id` int NOT NULL,
+  `departure_time` time NOT NULL,
+  `ship_id` int NOT NULL DEFAULT '0',
+  `destination_id` int NOT NULL DEFAULT '0',
+  `badge_id` tinyint UNSIGNED NOT NULL DEFAULT '0',
+  `ontime` tinyint UNSIGNED NOT NULL DEFAULT '15',
+  `offtime` tinyint UNSIGNED NOT NULL DEFAULT '10',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`timetable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- テーブルのデータのダンプ `timetable`
+--
+
+INSERT INTO `timetable` (`timetable_id`, `station_id`, `departure_time`, `ship_id`, `destination_id`, `badge_id`, `ontime`, `offtime`, `created_at`, `updated_at`) VALUES
+(31, 2, '14:46:00', 1, 1, 2, 10, 5, '2026-03-16 05:44:27', '2026-03-16 05:44:27'),
+(35, 2, '16:10:00', 2, 2, 2, 10, 5, '2026-03-16 07:04:31', '2026-03-16 07:04:31'),
+(265, 1, '18:38:00', 2, 3, 2, 10, 5, '2026-03-18 09:43:14', '2026-03-18 09:57:24'),
+(266, 1, '13:27:00', 3, 2, 4, 10, 5, '2026-03-18 09:43:14', '2026-03-18 10:03:08'),
+(292, 1, '02:03:00', 1, 2, 0, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(293, 1, '01:03:00', 3, 3, 0, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(294, 1, '13:27:00', 2, 2, 0, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(295, 1, '14:02:00', 2, 1, 0, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(296, 1, '20:19:00', 2, 1, 2, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(297, 1, '22:20:00', 3, 1, 2, 10, 5, '2026-03-19 09:16:10', '2026-03-19 09:16:10'),
+(377, 1, '02:03:00', 2, 2, 0, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31'),
+(378, 1, '01:03:00', 1, 3, 0, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31'),
+(379, 1, '19:27:00', 2, 2, 0, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31'),
+(380, 1, '20:02:00', 2, 1, 3, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31'),
+(381, 1, '02:43:00', 2, 1, 0, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31'),
+(382, 1, '18:45:00', 1, 1, 0, 10, 5, '2026-03-23 10:15:31', '2026-03-23 10:15:31');
+
+--
+-- ダンプしたテーブルのインデックス
+--
+
+--
+-- テーブルのインデックス `content_display`
+--
+ALTER TABLE `content_display`
+  ADD UNIQUE KEY `uq_content_display_station_sort` (`station_id`,`sort_order`),
+  ADD UNIQUE KEY `uq_content_display_station_content` (`station_id`,`content_id`),
+  ADD KEY `idx_content_display_station` (`station_id`,`sort_order`);
+
+--
+-- テーブルのインデックス `content_item`
+--
+ALTER TABLE `content_item`
+  ADD KEY `idx_content_station` (`station_id`,`is_active`,`sort_order`);
+
+--
+-- テーブルのインデックス `message`
+--
+ALTER TABLE `message`
+  ADD KEY `idx_message_station` (`station_id`,`message_id`),
+  ADD KEY `idx_message_station_order` (`station_id`,`sort_order`,`message_id`);
+
+--
+-- テーブルのインデックス `schedule`
+--
+ALTER TABLE `schedule`
+  ADD KEY `idx_dial_period_station` (`station_id`,`is_active`),
+  ADD KEY `idx_schedule_station` (`station_id`,`is_active`,`season_id`),
+  ADD KEY `fk_schedule_season` (`season_id`),
+  ADD KEY `fk_schedule_ship` (`ship_id`),
+  ADD KEY `fk_schedule_destination` (`destination_id`);
+
+--
+-- テーブルのインデックス `timetable`
+--
+ALTER TABLE `timetable`
+  ADD KEY `idx_timetable_station_dial_time` (`station_id`,`departure_time`),
+  ADD KEY `idx_timetable_station_time` (`station_id`,`departure_time`),
+  ADD KEY `fk_timetable_ship` (`ship_id`),
+  ADD KEY `fk_timetable_destination` (`destination_id`);
+
+--
+-- ダンプしたテーブルの AUTO_INCREMENT
+--
+
+--
+-- テーブルの AUTO_INCREMENT `content_display`
+--
+ALTER TABLE `content_display`
+  MODIFY `content_display_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+
+--
+-- テーブルの AUTO_INCREMENT `content_item`
+--
+ALTER TABLE `content_item`
+  MODIFY `content_item_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+
+--
+-- テーブルの AUTO_INCREMENT `destination`
+--
+ALTER TABLE `destination`
+  MODIFY `destination_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- テーブルの AUTO_INCREMENT `display`
+--
+ALTER TABLE `display`
+  MODIFY `display_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- テーブルの AUTO_INCREMENT `message`
+--
+ALTER TABLE `message`
+  MODIFY `message_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- テーブルの AUTO_INCREMENT `schedule`
+--
+ALTER TABLE `schedule`
+  MODIFY `schedule_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- テーブルの AUTO_INCREMENT `season`
+--
+ALTER TABLE `season`
+  MODIFY `season_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- テーブルの AUTO_INCREMENT `timetable`
+--
+ALTER TABLE `timetable`
+  MODIFY `timetable_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=383;
+
+--
+-- ダンプしたテーブルの制約
+--
+
+--
+-- テーブルの制約 `schedule`
+--
+ALTER TABLE `schedule`
+  ADD CONSTRAINT `fk_schedule_destination` FOREIGN KEY (`destination_id`) REFERENCES `destination` (`destination_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_schedule_season` FOREIGN KEY (`season_id`) REFERENCES `season` (`season_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_schedule_ship` FOREIGN KEY (`ship_id`) REFERENCES `ship` (`ship_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_schedule_station` FOREIGN KEY (`station_id`) REFERENCES `station` (`station_id`) ON DELETE CASCADE;
+
+--
+-- テーブルの制約 `timetable`
+--
+ALTER TABLE `timetable`
+  ADD CONSTRAINT `fk_timetable_destination` FOREIGN KEY (`destination_id`) REFERENCES `destination` (`destination_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_timetable_ship` FOREIGN KEY (`ship_id`) REFERENCES `ship` (`ship_id`) ON DELETE CASCADE;
+COMMIT;
+
+SET @OLD_CHARACTER_SET_CLIENT = COALESCE(@OLD_CHARACTER_SET_CLIENT, @@CHARACTER_SET_CLIENT);
+SET @OLD_CHARACTER_SET_RESULTS = COALESCE(@OLD_CHARACTER_SET_RESULTS, @@CHARACTER_SET_RESULTS);
+SET @OLD_COLLATION_CONNECTION = COALESCE(@OLD_COLLATION_CONNECTION, @@COLLATION_CONNECTION);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
