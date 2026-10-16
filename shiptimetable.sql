@@ -218,7 +218,7 @@ INSERT INTO `display_language_setting` (`station_id`, `english_enabled`, `create
 
 CREATE TABLE `login` (
   `login_id` varchar(50) NOT NULL DEFAULT '',
-  `pass` varchar(50) DEFAULT NULL,
+  `pass` varchar(255) DEFAULT NULL,
   `auth` int DEFAULT NULL,
   `station_id` int DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -230,8 +230,7 @@ CREATE TABLE `login` (
 -- テーブルのデータのダンプ `login`
 --
 
-INSERT INTO `login` (`login_id`, `pass`, `auth`, `station_id`, `created_at`, `updated_at`) VALUES
-('test', 'test', 0, 1, '2026-03-02 07:20:39', '2026-03-02 07:20:39');
+-- No login rows are shipped. Create one with: php bin/set_password.php <login_id> <station_id>
 
 -- --------------------------------------------------------
 

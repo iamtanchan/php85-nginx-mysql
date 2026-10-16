@@ -64,6 +64,21 @@
 
 6. アプリ本体は `src` を直接編集します。Docker のローカル開発構成も `src` をそのままマウントします。
 
+## データベースとログインユーザー
+
+- 初期スキーマは `shiptimetable.sql` です（Web 公開ディレクトリ `src` の外に置いています）。ログインユーザーは含まれていません。
+- パスワードは `password_hash()` でハッシュ化して保存します。ログインユーザーの作成・パスワード変更はコマンドラインで行います。
+
+  ```bash
+  # 作成（login_id と station_id を指定。auth は省略時 0）
+  docker compose exec web php bin/set_password.php <login_id> <station_id> [auth]
+  # パスワード変更
+  docker compose exec web php bin/set_password.php <login_id>
+  ```
+
+- 既存のデータベースでは `sql/migrations/20261016_login_pass_varchar255.sql` を一度実行してください。実行前でも従来どおりログインでき、実行後は各ユーザーの次回ログイン時にパスワードが自動でハッシュ化されます。
+- `*.sql`、`.env`、ドットファイル、`bin/` は Web から配信されません（nginx・Apache の両方で拒否）。
+
 ## 変更点
 
 - `Dockerfile` を追加して App Platform からそのままビルドできるようにしました。

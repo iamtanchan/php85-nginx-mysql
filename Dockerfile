@@ -25,6 +25,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY docker-config/php/php.ini /usr/local/etc/php/php.ini
+COPY docker-config/apache/security.conf /etc/apache2/conf-available/security-app.conf
+RUN a2enconf security-app
 COPY src /var/www/html/src
 COPY ca-certificate.crt /var/www/html/ca-certificate.crt
 
