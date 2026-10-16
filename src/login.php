@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/lib/admin_bootstrap.php';
+require_once __DIR__ . '/lib/password_auth.php';
 
 // エラーメッセージ
 $errorMessage = "";
@@ -8,27 +9,21 @@ $viewUserId = "";
 // ログインボタンが押された場合      
 if (isset($_POST["login"])) {
 
-    $user = $_POST["user"];
-    $pass = $_POST["pass"];
+    $user = (string)($_POST["user"] ?? '');
+    $pass = (string)($_POST["pass"] ?? '');
     $viewUserId = $user;
-    $count = 0;
     try {
-        $sql = 'SELECT * FROM login WHERE login_id = :id AND pass = :pass';
-        $stt = $db->prepare($sql);
-        $stt->bindValue(':id', $user);
-        $stt->bindValue(':pass', $pass);
-        $stt->execute();
-        $count = $stt->rowCount();
+        $row = app_authenticate($db, $user, $pass);
     } catch (PDOException $e) {
-        die('エラーメッセージ' . $e->getMessage());
+        error_log('Login query failed: ' . $e->getMessage());
+        die('エラーが発生しました。しばらくしてから再度お試しください。');
     }
     // 認証成功
-    if ($count == 1) {
+    if ($row !== null) {
         // セッションIDを新規に発行する
         // Regenerate the session ID on login to prevent session fixation.
         session_regenerate_id(TRUE);
 
-        $row = $stt->fetch();
         $_SESSION["auth"] = $row['auth'];
         $_SESSION["LOGIN"] = $user;
         header('Location: master.php?s=1');

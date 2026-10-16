@@ -10,6 +10,11 @@ server {
     access_log /dev/stdout;
     error_log /dev/stderr warn;
 
+    # Never serve database dumps, env/ini/log files, dotfiles or the CLI tools in bin/
+    location ~ (\.(sql|sql\.gz|env|ini|log)$|/\.|^/bin/) {
+        deny all;
+    }
+
     location / {
         try_files $uri $uri/ /index.php$is_args$args;
     }
